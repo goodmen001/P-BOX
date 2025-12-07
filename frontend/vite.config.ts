@@ -4,36 +4,26 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [react()],
-
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-
   server: {
-    port: 5173,
+    port: 5174,
     proxy: {
       '/api': {
-        target: 'http://localhost:8383',
+        target: 'http://127.0.0.1:8383',
         changeOrigin: true,
       },
       '/ws': {
-        target: 'ws://localhost:8383',
+        target: 'ws://127.0.0.1:8383',
         ws: true,
       },
     },
   },
-
   build: {
     outDir: 'dist',
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
   },
 })

@@ -1,0 +1,102 @@
+mixed-port-enabled: true
+mixed-port: 7890
+socks-port-enabled: false
+socks-port: 7891
+http-port-enabled: false
+port: 7892
+redir-port-enabled: false
+redir-port: 7893
+tproxy-port-enabled: false
+tproxy-port: 7894
+authentication: []
+allow-lan: true
+bind-address: '*'
+auto-start: false
+auto-start-delay: 15
+mode: rule
+log-level: info
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: "off"
+keep-alive-interval: 30
+keep-alive-idle: 60
+disable-keep-alive: false
+global-client-fingerprint: chrome
+skip-cert-verify: false
+geodata-mode: true
+geodata-loader: standard
+geo-auto-update: true
+geo-update-interval: 24
+interface-name: ""
+routing-mark: 0
+dns:
+    enable: true
+    listen: 0.0.0.0:53
+    prefer-h3: true
+    cache-algorithm: arc
+    ipv6: false
+    use-hosts: true
+    use-system-hosts: false
+    respect-rules: true
+    enhanced-mode: fake-ip
+    fake-ip-range: 198.18.0.1/16
+    fake-ip-range6: fc00::/18
+    fake-ip-filter-mode: blacklist
+    fake-ip-filter:
+        - geosite:cn
+        - geosite:private
+        - '*.lan'
+        - '*.local'
+        - '*.localhost'
+    default-nameserver:
+        - 223.5.5.5
+        - 119.29.29.29
+    nameserver:
+        - https://dns.google/dns-query
+        - https://cloudflare-dns.com/dns-query
+    fallback:
+        - https://dns.google/dns-query
+        - https://cloudflare-dns.com/dns-query
+    proxy-server-nameserver:
+        - 223.5.5.5
+        - 119.29.29.29
+    direct-nameserver:
+        - 223.5.5.5
+        - 119.29.29.29
+tun:
+    enable: false
+    device: mihomo
+    stack: mixed
+    mtu: 9000
+    gso: true
+    gso-max-size: 65536
+    auto-route: true
+    auto-redirect: true
+    auto-detect-interface: true
+    strict-route: true
+    udp-timeout: 300
+    dns-hijack:
+        - any:53
+        - tcp://any:53
+    endpoint-independent-nat: true
+    route-address: []
+    route-exclude-address:
+        - 192.168.0.0/16
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 127.0.0.0/8
+        - fc00::/7
+        - fe80::/10
+    iproute2-table-index: 2022
+    iproute2-rule-index: 9000
+sniffer:
+    enable: true
+    force-dns-mapping: true
+    parse-pure-ip: true
+    override-destination: true
+    sniff-http: true
+    sniff-tls: true
+    sniff-quic: true
+    skip-domain:
+        - +.push.apple.com

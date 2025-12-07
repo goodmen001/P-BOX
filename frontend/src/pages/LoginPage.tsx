@@ -1,137 +1,158 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
-import { Eye, EyeOff, LogIn, Loader2 } from 'lucide-react'
+import { Lock, Loader2, User } from 'lucide-react'
 import { authApi } from '@/api/auth'
+import { useThemeStore } from '@/stores/themeStore'
+import { cn } from '@/lib/utils'
 
 export default function LoginPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const [username, setUsername] = useState('')
+  const { themeStyle } = useThemeStore()
+  const [username, setUsername] = useState('admin')
   const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [checking, setChecking] = useState(true)
+  const [error, setError] = useState('')
 
-  // 检查认证状态
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const status = await authApi.check()
-        if (!status.enabled || status.authenticated) {
-          navigate('/', { replace: true })
-        }
-      } catch (err) {
-        // 忽略错误
-        console.debug('Auth check:', err)
-      } finally {
-        setChecking(false)
-      }
-    }
-    checkAuth()
-  }, [navigate])
+  const isGlass = themeStyle === 'apple-glass'
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!username || !password) {
-      toast.error(t('auth.usernamePasswordRequired'))
-      return
-    }
-
     setLoading(true)
+    setError('')
+
     try {
-      const result = await authApi.login(username, password)
-      localStorage.setItem('p-box-token', result.token)
-      localStorage.setItem('p-box-user', JSON.stringify({
-        username: result.username,
-        avatar: result.avatar
-      }))
-      toast.success(t('auth.loginSuccess'))
-      navigate('/', { replace: true })
-    } catch (e: any) {
-      toast.error(e.message || t('auth.loginFailed'))
+      const res = await authApi.login({ username, password })
+      localStorage.setItem('p-box-token', res.token)
+      navigate('/')
+    } catch (err) {
+      setError((err as Error).message || t('login.error'))
     } finally {
       setLoading(false)
     }
   }
 
-  if (checking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    )
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-muted p-4">
-      <div className="w-full max-w-md">
+    <div className={cn(
+      'min-h-screen flex items-center justify-center p-4',
+      isGlass 
+        ? "bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop')] bg-cover bg-center"
+        : 'bg-neutral-950'
+    )}>
+      <div className={cn(
+        'w-full max-w-sm p-8 rounded-3xl shadow-2xl',
+        isGlass
+          ? 'bg-white/20 backdrop-blur-2xl border border-white/30'
+          : 'bg-neutral-900/95 backdrop-blur-xl border border-neutral-800'
+      )}>
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <span className="text-primary-foreground font-bold text-3xl">P</span>
+          <div className={cn(
+            'w-20 h-20 rounded-[22px] mx-auto mb-4 flex items-center justify-center shadow-lg overflow-hidden',
+            isGlass
+              ? 'bg-gradient-to-br from-slate-100 to-white border border-black/5'
+              : 'bg-black border border-purple-500/20'
+          )}>
+            <img src="/p-box-logo.png" alt="P-BOX" className="w-16 h-16 object-contain" />
           </div>
-          <h1 className="text-2xl font-bold">P-BOX</h1>
-          <p className="text-muted-foreground mt-1">{t('auth.loginTitle')}</p>
+          <h1 className={cn(
+            'text-2xl font-bold',
+            isGlass ? 'text-slate-800' : 'text-white'
+          )}>P-BOX</h1>
+          <p className={cn(
+            'text-sm mt-1',
+            isGlass ? 'text-slate-600' : 'text-slate-400'
+          )}>{t('login.title')}</p>
         </div>
 
-        {/* 登录表单 */}
-        <div className="bg-card rounded-2xl border border-border p-6 shadow-xl">
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">{t('auth.username')}</label>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 用户名 */}
+          <div>
+            <label className={cn(
+              'block text-sm font-medium mb-1.5',
+              isGlass ? 'text-slate-700' : 'text-slate-300'
+            )}>{t('login.username')}</label>
+            <div className="relative">
+              <User className={cn(
+                'absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5',
+                isGlass ? 'text-slate-400' : 'text-slate-500'
+              )} />
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder={t('auth.usernamePlaceholder')}
-                autoComplete="username"
+                placeholder={t('login.usernamePlaceholder')}
+                className={cn(
+                  'w-full pl-10 pr-4 py-3 rounded-xl border transition-all',
+                  isGlass
+                    ? 'bg-white/50 border-white/40 text-slate-800 placeholder:text-slate-400 focus:bg-white/70 focus:border-blue-400'
+                    : 'bg-neutral-800 border-neutral-700 text-white placeholder:text-slate-500 focus:border-cyan-500'
+                )}
               />
             </div>
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">{t('auth.password')}</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary pr-12"
-                  placeholder={t('auth.passwordPlaceholder')}
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+          {/* 密码 */}
+          <div>
+            <label className={cn(
+              'block text-sm font-medium mb-1.5',
+              isGlass ? 'text-slate-700' : 'text-slate-300'
+            )}>{t('login.password')}</label>
+            <div className="relative">
+              <Lock className={cn(
+                'absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5',
+                isGlass ? 'text-slate-400' : 'text-slate-500'
+              )} />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('login.passwordPlaceholder')}
+                className={cn(
+                  'w-full pl-10 pr-4 py-3 rounded-xl border transition-all',
+                  isGlass
+                    ? 'bg-white/50 border-white/40 text-slate-800 placeholder:text-slate-400 focus:bg-white/70 focus:border-blue-400'
+                    : 'bg-neutral-800 border-neutral-700 text-white placeholder:text-slate-500 focus:border-cyan-500'
+                )}
+                autoFocus
+              />
             </div>
+          </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <>
-                  <LogIn className="w-5 h-5" />
-                  {t('auth.login')}
-                </>
-              )}
-            </button>
-          </form>
-        </div>
+          {error && (
+            <div className={cn(
+              'text-sm text-center py-2 px-3 rounded-lg',
+              isGlass ? 'bg-red-100/80 text-red-600' : 'bg-red-500/20 text-red-400'
+            )}>{error}</div>
+          )}
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          {t('auth.defaultCredentials')}: admin / admin123
+          <button
+            type="submit"
+            disabled={loading || !password}
+            className={cn(
+              'w-full py-3.5 rounded-xl font-semibold transition-all duration-200 mt-6',
+              'disabled:opacity-50 disabled:cursor-not-allowed',
+              isGlass
+                ? 'bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg'
+                : 'bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white'
+            )}
+          >
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+            ) : (
+              t('login.submit')
+            )}
+          </button>
+        </form>
+
+        {/* 底部版权 */}
+        <p className={cn(
+          'text-xs text-center mt-6',
+          isGlass ? 'text-slate-500' : 'text-slate-600'
+        )}>
+          © 2024 P-BOX. All rights reserved.
         </p>
       </div>
     </div>

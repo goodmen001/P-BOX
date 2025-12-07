@@ -38,6 +38,7 @@ func (h *Handler) RegisterRoutes(r *gin.RouterGroup) {
 	r.GET("/config", h.GetConfig)
 	r.PUT("/config", h.UpdateConfig)
 	r.POST("/generate", h.GenerateConfig)
+	r.GET("/config/preview", h.GetConfigPreview)
 	r.GET("/logs", h.GetLogs)
 
 	// 配置模板管理
@@ -231,15 +232,20 @@ func (h *Handler) GenerateConfig(c *gin.Context) {
 	var req struct {
 		Nodes []ProxyNode `json:"nodes"`
 	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"code":    1,
-			"message": err.Error(),
-		})
-		return
+	// 允许空 body，此时自动获取节点
+	c.ShouldBindJSON(&req)
+
+	var configPath string
+	var err error
+
+	if len(req.Nodes) == 0 {
+		// 没有传节点，调用 regenerateConfig 自动获取所有节点
+		configPath, err = h.service.RegenerateConfig()
+	} else {
+		// 使用传入的节点
+		configPath, err = h.service.GenerateConfig(req.Nodes)
 	}
 
-	configPath, err := h.service.GenerateConfig(req.Nodes)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":    1,
@@ -253,6 +259,29 @@ func (h *Handler) GenerateConfig(c *gin.Context) {
 		"message": "success",
 		"data": gin.H{
 			"configPath": configPath,
+		},
+	})
+}
+
+// GetConfigPreview 获取生成的 config.yaml 内容用于预览
+func (h *Handler) GetConfigPreview(c *gin.Context) {
+	content, err := h.service.GetConfigContent()
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"code":    0,
+			"message": "success",
+			"data": gin.H{
+				"content": "// 配置文件未生成，请先点击「生成配置」按钮",
+			},
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    0,
+		"message": "success",
+		"data": gin.H{
+			"content": content,
 		},
 	})
 }

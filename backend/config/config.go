@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -53,11 +54,34 @@ type SecurityConfig struct {
 	Password string `yaml:"password"`
 }
 
-// GetExecutableDir 获取可执行文件所在目录（绝对路径）
-func GetExecutableDir() string {
+// IsDevMode 检测是否为开发模式
+// 开发模式：通过 go run 运行，可执行文件在临时目录
+func IsDevMode() bool {
 	exe, err := os.Executable()
 	if err != nil {
-		// 回退到当前工作目录
+		return true
+	}
+	// go run 时可执行文件在临时目录
+	dir := filepath.Dir(exe)
+	return filepath.Base(dir) == "exe" || // Windows: go-build.../exe
+		filepath.Dir(dir) == os.TempDir() || // macOS/Linux 临时目录
+		strings.Contains(dir, "go-build") // go-build 目录
+}
+
+// GetExecutableDir 获取可执行文件所在目录（绝对路径）
+// 开发模式使用当前工作目录，生产模式使用可执行文件目录
+func GetExecutableDir() string {
+	// 开发模式：使用当前工作目录
+	if IsDevMode() {
+		wd, err := os.Getwd()
+		if err == nil {
+			return wd
+		}
+	}
+
+	// 生产模式：使用可执行文件目录
+	exe, err := os.Executable()
+	if err != nil {
 		wd, _ := os.Getwd()
 		return wd
 	}

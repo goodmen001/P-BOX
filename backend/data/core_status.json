@@ -3,5 +3,10 @@
   "versions": {
     "mihomo": "1.19.17",
     "singbox": "unknown"
-  }
+  },
+  "latestVersions": {
+    "mihomo": "1.19.17",
+    "singbox": "1.12.12"
+  },
+  "lastChecked": "2025-12-07T19:45:00.885247+08:00"
 }

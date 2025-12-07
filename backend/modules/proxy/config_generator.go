@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -14,7 +15,7 @@ import (
 // MihomoConfig Mihomo/Clash 配置结构
 type MihomoConfig struct {
 	// 基础配置
-	MixedPort          int    `yaml:"mixed-port"`
+	MixedPort          int    `yaml:"mixed-port,omitempty"`
 	Port               int    `yaml:"port,omitempty"`
 	SocksPort          int    `yaml:"socks-port,omitempty"`
 	RedirPort          int    `yaml:"redir-port,omitempty"`
@@ -259,18 +260,15 @@ func (g *ConfigGenerator) GenerateConfig(nodes []ProxyNode, options ConfigGenera
 		},
 	}
 
-	// 透明代理端口 (Linux 网关模式)
-	if options.EnableTProxy && options.TProxyPort > 0 {
-		config.TProxyPort = options.TProxyPort
-	}
-	// 默认启用透明代理端口 (用于 Linux 网关)
-	if config.TProxyPort == 0 {
-		config.TProxyPort = 7893
-	}
-	// Redir 端口 (用于 iptables REDIRECT)
-	if config.RedirPort == 0 {
+	// 透明代理端口 - 只有启用时才设置
+	if options.EnableTProxy {
+		if options.TProxyPort > 0 {
+			config.TProxyPort = options.TProxyPort
+		}
+		// Redir 端口 (用于 iptables REDIRECT)
 		config.RedirPort = 7892
 	}
+	// 系统代理模式不设置 redir-port 和 tproxy-port
 
 	// DNS 配置
 	config.DNS = g.generateDNSConfig(options)
@@ -576,11 +574,32 @@ func (g *ConfigGenerator) convertProxies(nodes []ProxyNode) []map[string]interfa
 				if insecure, ok := tls["insecure"].(bool); ok {
 					proxy["skip-cert-verify"] = insecure
 				}
+				if alpn, ok := tls["alpn"].([]interface{}); ok && len(alpn) > 0 {
+					proxy["alpn"] = alpn
+				}
 				delete(proxy, "tls")
 			}
 			if sni, ok := proxy["server_name"].(string); ok {
 				proxy["sni"] = sni
 				delete(proxy, "server_name")
+			}
+			// 处理 obfs 配置 (sing-box 格式 -> Mihomo 格式)
+			if obfs, ok := proxy["obfs"].(map[string]interface{}); ok {
+				if obfsType, ok := obfs["type"].(string); ok && obfsType != "" {
+					proxy["obfs"] = obfsType
+				}
+				if obfsPwd, ok := obfs["password"].(string); ok && obfsPwd != "" {
+					proxy["obfs-password"] = obfsPwd
+				}
+			}
+			// 处理带宽限制 (up_mbps/down_mbps -> up/down)
+			if upMbps, ok := proxy["up_mbps"].(float64); ok && upMbps > 0 {
+				proxy["up"] = fmt.Sprintf("%d Mbps", int(upMbps))
+				delete(proxy, "up_mbps")
+			}
+			if downMbps, ok := proxy["down_mbps"].(float64); ok && downMbps > 0 {
+				proxy["down"] = fmt.Sprintf("%d Mbps", int(downMbps))
+				delete(proxy, "down_mbps")
 			}
 			// Hysteria2 默认启用 UDP
 			if _, ok := proxy["udp"]; !ok {
@@ -613,6 +632,9 @@ func (g *ConfigGenerator) convertProxies(nodes []ProxyNode) []map[string]interfa
 			if _, ok := proxy["client-fingerprint"]; !ok {
 				proxy["client-fingerprint"] = "chrome"
 			}
+			// 删除 Mihomo 不需要的字段
+			delete(proxy, "packet_encoding")
+			delete(proxy, "encryption")
 
 		case "vmess":
 			// VMess 需要 uuid, alterId, cipher
@@ -622,8 +644,20 @@ func (g *ConfigGenerator) convertProxies(nodes []ProxyNode) []map[string]interfa
 					delete(proxy, "password")
 				}
 			}
+			// alter_id -> alterId (订阅解析器使用下划线，Mihomo 使用驼峰)
+			if alterId, ok := proxy["alter_id"]; ok {
+				proxy["alterId"] = alterId
+				delete(proxy, "alter_id")
+			}
 			if _, ok := proxy["alterId"]; !ok {
 				proxy["alterId"] = 0
+			}
+			// security -> cipher (订阅解析器使用 security，Mihomo 使用 cipher)
+			if security, ok := proxy["security"].(string); ok && security != "" {
+				if _, exists := proxy["cipher"]; !exists {
+					proxy["cipher"] = security
+				}
+				delete(proxy, "security")
 			}
 			if _, ok := proxy["cipher"]; !ok {
 				proxy["cipher"] = "auto"
@@ -636,6 +670,10 @@ func (g *ConfigGenerator) convertProxies(nodes []ProxyNode) []map[string]interfa
 			if _, ok := proxy["client-fingerprint"]; !ok {
 				proxy["client-fingerprint"] = "chrome"
 			}
+			// 删除 Mihomo 不需要的字段
+			delete(proxy, "global_padding")
+			delete(proxy, "authenticated_length")
+			delete(proxy, "packet_encoding")
 
 		case "ss", "shadowsocks":
 			proxy["type"] = "ss"
@@ -649,6 +687,11 @@ func (g *ConfigGenerator) convertProxies(nodes []ProxyNode) []map[string]interfa
 					// 默认使用 aes-256-gcm（最常用的加密方式）
 					proxy["cipher"] = "aes-256-gcm"
 				}
+			}
+			// 处理 plugin_opts -> plugin-opts 字段名转换（兼容不同来源）
+			if pluginOpts, ok := proxy["plugin_opts"]; ok {
+				proxy["plugin-opts"] = pluginOpts
+				delete(proxy, "plugin_opts")
 			}
 			// 默认启用 UDP
 			if _, ok := proxy["udp"]; !ok {
@@ -691,15 +734,34 @@ func (g *ConfigGenerator) convertProxies(nodes []ProxyNode) []map[string]interfa
 			}
 
 		case "tuic":
-			// TUIC 协议
+			// TUIC 协议 - 字段名转换
+			// udp_relay_mode -> udp-relay-mode
+			if mode, ok := proxy["udp_relay_mode"].(string); ok {
+				proxy["udp-relay-mode"] = mode
+				delete(proxy, "udp_relay_mode")
+			}
 			if _, ok := proxy["udp-relay-mode"]; !ok {
 				proxy["udp-relay-mode"] = "native" // native 或 quic
+			}
+			// congestion_control -> congestion-controller
+			if cc, ok := proxy["congestion_control"].(string); ok {
+				proxy["congestion-controller"] = cc
+				delete(proxy, "congestion_control")
 			}
 			if _, ok := proxy["congestion-controller"]; !ok {
 				proxy["congestion-controller"] = "bbr" // cubic, new_reno, bbr
 			}
+			// zero_rtt_handshake -> reduce-rtt
+			if zeroRTT, ok := proxy["zero_rtt_handshake"].(bool); ok {
+				proxy["reduce-rtt"] = zeroRTT
+				delete(proxy, "zero_rtt_handshake")
+			}
 			if _, ok := proxy["reduce-rtt"]; !ok {
 				proxy["reduce-rtt"] = true
+			}
+			// 默认启用 UDP
+			if _, ok := proxy["udp"]; !ok {
+				proxy["udp"] = true
 			}
 
 		case "wireguard", "wg":
@@ -820,10 +882,15 @@ func (g *ConfigGenerator) convertProxies(nodes []ProxyNode) []map[string]interfa
 
 				case "grpc":
 					grpcOpts := make(map[string]interface{})
+					// 尝试从 grpc_options 获取 (VMess/Trojan 格式)
 					if grpcOptions, ok := transport["grpc_options"].(map[string]interface{}); ok {
 						if sn, ok := grpcOptions["service_name"].(string); ok {
 							grpcOpts["grpc-service-name"] = sn
 						}
+					}
+					// 也支持直接在 transport 层级的 service_name (VLESS 格式)
+					if sn, ok := transport["service_name"].(string); ok && sn != "" {
+						grpcOpts["grpc-service-name"] = sn
 					}
 					if len(grpcOpts) > 0 {
 						proxy["grpc-opts"] = grpcOpts

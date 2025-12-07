@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import App from './App'
 import { initTheme } from './stores/themeStore'
+import './styles/index.css'
 import './i18n'
-import './styles/globals.css'
 
-// 初始化主题
+// Initialize theme
 initTheme()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -14,5 +14,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 )

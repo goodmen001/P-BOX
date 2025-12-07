@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
-import { toast } from 'sonner'
 import {
-  Download,
   Users,
   List,
   Eye,
@@ -13,57 +12,58 @@ import {
   RotateCcw,
   ChevronDown,
   ChevronRight,
-  Globe,
-  Zap,
   Database,
   GripVertical,
+  Globe,
+  Zap,
   Rocket,
-  Target,
-  Bot,
-  Tv,
-  Film,
-  MessageCircle,
-  Search,
-  Twitter,
-  Facebook,
-  Gamepad2,
-  Apple,
-  Github,
-  Ban,
-  Fish,
-  Flag,
-  Shield,
-  type LucideIcon,
+  Copy,
+  Check,
+  X,
+  Loader2,
+  RefreshCw,
 } from 'lucide-react'
-
-// 图标映射（根据 icon 字段）
-const iconMap: Record<string, LucideIcon> = {
-  zap: Zap,
-  rocket: Rocket,
-  target: Target,
-  bot: Bot,
-  globe: Globe,
-  'message-circle': MessageCircle,
-  search: Search,
-  twitter: Twitter,
-  facebook: Facebook,
-  'gamepad-2': Gamepad2,
-  tv: Tv,
-  film: Film,
-  square: Globe,
-  apple: Apple,
-  github: Github,
-  ban: Ban,
-  fish: Fish,
-  flag: Flag,
-  shield: Shield,
-}
-
-const getIcon = (iconName: string): LucideIcon => {
-  return iconMap[iconName] || Globe
-}
-
+import { cn } from '@/lib/utils'
+import { useThemeStore } from '@/stores/themeStore'
 import { api } from '@/api/client'
+
+// 默认代理组名称翻译映射 (中文 -> 英文)
+const GROUP_NAME_MAP: Record<string, string> = {
+  // 主要分组
+  '自动选择': 'Auto Select',
+  '故障转移': 'Failover',
+  '节点选择': 'Node Select',
+  '全球直连': 'Direct',
+  // 服务分组
+  'AI服务': 'AI Services',
+  '国外媒体': 'Streaming',
+  'Netflix': 'Netflix',
+  '电报消息': 'Telegram',
+  '谷歌服务': 'Google',
+  '推特消息': 'Twitter',
+  '脸书服务': 'Facebook',
+  '游戏平台': 'Gaming',
+  '哔哩哔哩': 'Bilibili',
+  '微软服务': 'Microsoft',
+  '苹果服务': 'Apple',
+  'GitHub': 'GitHub',
+  '广告拦截': 'Ad Block',
+  '漏网之鱼': 'Final',
+  // 地区节点
+  '香港节点': 'Hong Kong',
+  '台湾节点': 'Taiwan',
+  '日本节点': 'Japan',
+  '新加坡节点': 'Singapore',
+  '美国节点': 'United States',
+  '手动节点': 'Manual',
+  '其他节点': 'Others',
+}
+
+// 翻译代理组名称 (当语言为英文时)
+const translateGroupName = (name: string, lang: string): string => {
+  if (lang === 'zh') return name
+  return GROUP_NAME_MAP[name] || name
+}
 
 // 类型定义
 interface ProxyGroup {
@@ -108,102 +108,157 @@ interface ConfigTemplate {
 
 export default function ConfigGeneratorPage() {
   const { t } = useTranslation()
+  const { themeStyle } = useThemeStore()
   const [activeTab, setActiveTab] = useState('groups')
   const [template, setTemplate] = useState<ConfigTemplate | null>(null)
   const [loading, setLoading] = useState(true)
-  const initializedRef = useRef(false)
+  const [saving, setSaving] = useState(false)
 
   const tabs = [
-    { id: 'groups', icon: Users, label: t('configGenerator.proxyGroups') },
-    { id: 'rules', icon: List, label: t('configGenerator.rules') },
-    { id: 'providers', icon: Database, label: t('configGenerator.rulesets') },
-    { id: 'preview', icon: Eye, label: t('configGenerator.preview') },
+    { id: 'groups', icon: Users, label: t('configGenerator.proxyGroups') || '代理组' },
+    { id: 'rules', icon: List, label: t('configGenerator.rules') || '规则' },
+    { id: 'providers', icon: Database, label: t('configGenerator.rulesets') || '规则集' },
+    { id: 'preview', icon: Eye, label: t('configGenerator.preview') || '预览' },
   ]
 
   // 加载配置模板
   const loadTemplate = async () => {
     try {
+      setLoading(true)
       const data = await api.get<ConfigTemplate>('/proxy/template')
       setTemplate(data)
-    } catch (e: any) {
-      toast.error(e.message || '加载配置失败')
+    } catch {
+      // 使用默认模板
+      setTemplate({
+        proxyGroups: [],
+        rules: [],
+        ruleProviders: []
+      })
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    if (initializedRef.current) return
-    initializedRef.current = true
     loadTemplate()
   }, [])
 
   // 重置为默认
   const resetTemplate = async () => {
-    if (!confirm('确定要重置为默认配置吗？所有自定义修改将丢失。')) return
+    if (!confirm(t('configGenerator.confirmReset') || '确定要重置为默认配置吗？')) return
     try {
+      setSaving(true)
       await api.post('/proxy/template/reset', {})
       await loadTemplate()
-      toast.success('已重置为默认配置')
-    } catch (e: any) {
-      toast.error(e.message || '重置失败')
+    } catch {
+      // Ignore
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  // 生成配置
+  const generateConfig = async () => {
+    try {
+      setSaving(true)
+      await api.post('/proxy/generate', { nodes: [] })
+      // 切换到预览 tab
+      setActiveTab('preview')
+      // 刷新模板以获取最新配置
+      await loadTemplate()
+    } catch {
+      // Ignore
+    } finally {
+      setSaving(false)
     }
   }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+        <Loader2 className={cn(
+          'w-8 h-8 animate-spin',
+          themeStyle === 'apple-glass' ? 'text-blue-500' : 'text-cyan-400'
+        )} />
       </div>
     )
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-end">
+      {/* 顶部操作栏 */}
+      <div className="flex items-center justify-end gap-2">
+        <button
+          onClick={generateConfig}
+          disabled={saving}
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
+            themeStyle === 'apple-glass'
+              ? 'bg-blue-500 text-white hover:bg-blue-600'
+              : 'bg-cyan-500 text-white hover:bg-cyan-600'
+          )}
+        >
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+          {saving ? t('configGenerator.generating') : t('configGenerator.generate')}
+        </button>
         <button
           onClick={resetTemplate}
-          className="inline-flex items-center px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors"
+          disabled={saving}
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
+            themeStyle === 'apple-glass'
+              ? 'bg-white/60 border border-black/10 text-slate-700 hover:bg-white/80'
+              : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10'
+          )}
         >
-          <RotateCcw className="w-4 h-4 mr-2" />
-          {t('configGenerator.resetDefault')}
+          <RotateCcw className="w-4 h-4" />
+          {t('configGenerator.resetDefault') || '重置默认'}
         </button>
       </div>
 
       {/* 标签页 */}
-      <div className="border-b border-border">
-        <div className="flex gap-1">
-          {tabs.map((tab) => {
-            const Icon = tab.icon
-            const count = template ? (
-              tab.id === 'groups' ? template.proxyGroups.length :
-              tab.id === 'rules' ? template.rules.length :
-              tab.id === 'providers' ? template.ruleProviders.length : 0
-            ) : 0
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                <span className="font-medium">{tab.label}</span>
-                {count > 0 && (
-                  <span className="text-xs px-1.5 py-0.5 rounded-full bg-muted">{count}</span>
-                )}
-              </button>
-            )
-          })}
-        </div>
+      <div className={cn(
+        'flex gap-1 p-1 rounded-xl',
+        themeStyle === 'apple-glass' ? 'bg-black/5' : 'bg-white/5'
+      )}>
+        {tabs.map((tab) => {
+          const Icon = tab.icon
+          const count = template ? (
+            tab.id === 'groups' ? template.proxyGroups.length :
+            tab.id === 'rules' ? template.rules.length :
+            tab.id === 'providers' ? template.ruleProviders.length : 0
+          ) : 0
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                'flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 rounded-lg text-xs sm:text-sm font-medium transition-all',
+                activeTab === tab.id
+                  ? themeStyle === 'apple-glass'
+                    ? 'bg-white shadow-sm text-slate-800'
+                    : 'bg-white/10 text-white'
+                  : themeStyle === 'apple-glass'
+                    ? 'text-slate-500 hover:text-slate-700'
+                    : 'text-slate-400 hover:text-white'
+              )}
+            >
+              <Icon className="w-4 h-4" />
+              <span className="hidden sm:inline">{tab.label}</span>
+              {count > 0 && (
+                <span className={cn(
+                  'text-xs px-1.5 py-0.5 rounded-full',
+                  themeStyle === 'apple-glass' ? 'bg-blue-100 text-blue-600' : 'bg-cyan-500/20 text-cyan-400'
+                )}>{count}</span>
+              )}
+            </button>
+          )
+        })}
       </div>
 
       {/* 内容区 */}
       {template && (
-        <div>
+        <div className="glass-card p-3 sm:p-5">
           {activeTab === 'groups' && (
             <ProxyGroupsTab template={template} setTemplate={setTemplate} />
           )}
@@ -211,10 +266,10 @@ export default function ConfigGeneratorPage() {
             <RulesTab template={template} setTemplate={setTemplate} />
           )}
           {activeTab === 'providers' && (
-            <ProvidersTab template={template} />
+            <ProvidersTab template={template} setTemplate={setTemplate} />
           )}
           {activeTab === 'preview' && (
-            <PreviewTab template={template} />
+            <PreviewTab />
           )}
         </div>
       )}
@@ -230,7 +285,9 @@ function ProxyGroupsTab({
   template: ConfigTemplate
   setTemplate: (tpl: ConfigTemplate) => void 
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const lang = i18n.language
+  const { themeStyle } = useThemeStore()
   const [editingGroup, setEditingGroup] = useState<ProxyGroup | null>(null)
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
@@ -240,15 +297,21 @@ function ProxyGroupsTab({
     try {
       await api.put('/proxy/template/groups', groups)
       setTemplate({ ...template, proxyGroups: groups })
-      toast.success(t('configGenerator.saveSuccess'))
-    } catch (e: any) {
-      toast.error(e.message || t('configGenerator.saveFailed'))
+    } catch {
+      // Ignore
     }
   }
 
   const deleteGroup = (name: string) => {
-    if (!confirm(t('configGenerator.confirmDelete', { name }))) return
+    if (!confirm(t('configGen.confirmDelete'))) return
     const newGroups = template.proxyGroups.filter(g => g.name !== name)
+    saveGroups(newGroups)
+  }
+
+  const toggleEnabled = (name: string) => {
+    const newGroups = template.proxyGroups.map(g => 
+      g.name === name ? { ...g, enabled: !g.enabled } : g
+    )
     saveGroups(newGroups)
   }
 
@@ -266,10 +329,7 @@ function ProxyGroupsTab({
 
   const saveEditingGroup = () => {
     if (!editingGroup) return
-    if (!editingGroup.name.trim()) {
-      toast.error('请输入代理组名称')
-      return
-    }
+    if (!editingGroup.name.trim()) return
 
     const existingIndex = template.proxyGroups.findIndex(g => g.name === editingGroup.name)
     let newGroups: ProxyGroup[]
@@ -283,6 +343,16 @@ function ProxyGroupsTab({
 
     saveGroups(newGroups)
     setEditingGroup(null)
+  }
+
+  const toggleExpand = (name: string) => {
+    const newExpanded = new Set(expandedGroups)
+    if (newExpanded.has(name)) {
+      newExpanded.delete(name)
+    } else {
+      newExpanded.add(name)
+    }
+    setExpandedGroups(newExpanded)
   }
 
   // 拖拽处理函数
@@ -330,138 +400,183 @@ function ProxyGroupsTab({
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">
-          配置代理分组，拖拽可调整顺序，生成配置时按此顺序排列
+        <p className={cn(
+          'text-sm',
+          themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+        )}>
+          {t('configGen.groupsDescription')}
         </p>
         <button
           onClick={addGroup}
-          className="inline-flex items-center px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
+            themeStyle === 'apple-glass'
+              ? 'bg-blue-500 text-white hover:bg-blue-600'
+              : 'bg-cyan-500 text-white hover:bg-cyan-600'
+          )}
         >
-          <Plus className="w-4 h-4 mr-2" />
-          添加分组
+          <Plus className="w-4 h-4" />
+          {t('configGen.addGroup')}
         </button>
       </div>
 
+      {/* 分组列表 */}
       <div className="space-y-2">
-        {template.proxyGroups.map((group, index) => {
-          const isExpanded = expandedGroups.has(group.name)
-          const isEnabled = group.enabled !== false // 默认启用
-          const isDragging = draggedIndex === index
-          const isDragOver = dragOverIndex === index
-
-          return (
-            <div
-              key={group.name}
-              draggable
-              onDragStart={(e) => handleDragStart(e, index)}
-              onDragOver={(e) => handleDragOver(e, index)}
-              onDragLeave={handleDragLeave}
-              onDrop={(e) => handleDrop(e, index)}
-              onDragEnd={handleDragEnd}
-              className={`rounded-xl border bg-card overflow-hidden transition-all ${
-                !isEnabled ? 'opacity-50' : ''
-              } ${isDragging ? 'opacity-50 scale-[0.98]' : ''} ${
-                isDragOver ? 'border-primary border-2' : 'border-border'
-              }`}
-            >
+        {template.proxyGroups.length === 0 ? (
+          <div className={cn(
+            'text-center py-12',
+            themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+          )}>
+            {t('configGen.noGroups')}
+          </div>
+        ) : (
+          template.proxyGroups.map((group, index) => {
+            const isExpanded = expandedGroups.has(group.name)
+            const isEnabled = group.enabled !== false
+            const isDragging = draggedIndex === index
+            const isDragOver = dragOverIndex === index
+            
+            return (
               <div
-                className="flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50"
-                onClick={() => {
-                  setExpandedGroups(prev => {
-                    const next = new Set(prev)
-                    if (next.has(group.name)) next.delete(group.name)
-                    else next.add(group.name)
-                    return next
-                  })
-                }}
+                key={group.name}
+                draggable
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={(e) => handleDragOver(e, index)}
+                onDragLeave={handleDragLeave}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragEnd={handleDragEnd}
+                className={cn(
+                  'rounded-xl border transition-all',
+                  themeStyle === 'apple-glass'
+                    ? 'bg-white/40 border-white/30'
+                    : 'bg-white/5 border-white/10',
+                  !isEnabled && 'opacity-50',
+                  isDragging && 'opacity-50 scale-[0.98]',
+                  isDragOver && 'border-blue-500 border-2'
+                )}
               >
-                {/* 拖拽手柄 */}
-                <div 
-                  className="cursor-grab active:cursor-grabbing p-1 -ml-1 hover:bg-muted rounded"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <GripVertical className="w-4 h-4 text-muted-foreground" />
-                </div>
-
-                {/* 启用开关 */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    const newGroups = template.proxyGroups.map(g => 
-                      g.name === group.name ? { ...g, enabled: !isEnabled } : g
-                    )
-                    saveGroups(newGroups)
-                  }}
-                  className={`w-10 h-5 rounded-full transition-colors relative ${
-                    isEnabled ? 'bg-primary' : 'bg-muted'
-                  }`}
-                  title={isEnabled ? '点击禁用' : '点击启用'}
-                >
-                  <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ${
-                    isEnabled ? 'left-5' : 'left-0.5'
-                  }`} />
-                </button>
-                
-                {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  {(() => {
-                    const IconComponent = getIcon(group.icon)
-                    return <IconComponent className="w-4 h-4 text-primary" />
-                  })()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="font-medium">{group.name}</div>
-                  <div className="text-sm text-muted-foreground truncate">
-                    {group.description || `${group.type}`}
-                  </div>
-                </div>
-                <span className="text-xs px-2 py-1 rounded bg-muted">{group.type}</span>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setEditingGroup({ ...group }) }}
-                  className="p-2 rounded-lg hover:bg-muted"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); deleteGroup(group.name) }}
-                  className="p-2 rounded-lg hover:bg-destructive/10 text-destructive"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-
-              {isExpanded && (
-                <div className="px-4 pb-4 border-t border-border bg-muted/30">
-                  <div className="mt-3 text-sm space-y-1">
-                    {group.filter && (
-                      <p><span className="text-muted-foreground">过滤器：</span>
-                        <code className="ml-1 px-1 py-0.5 bg-muted rounded text-xs">{group.filter}</code>
-                      </p>
+                <div className="flex items-center gap-3 p-3">
+                  <GripVertical className={cn(
+                    'w-4 h-4 cursor-grab active:cursor-grabbing',
+                    themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+                  )} />
+                  
+                  <button onClick={() => toggleExpand(group.name)} className="p-1">
+                    {isExpanded ? (
+                      <ChevronDown className="w-4 h-4" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4" />
                     )}
-                    <p><span className="text-muted-foreground">节点来源：</span>
-                      {group.useAll ? (
-                        <span className="ml-1 text-primary">全部订阅节点</span>
-                      ) : (
-                        <span className="ml-1">{group.proxies.join(' → ')}</span>
+                  </button>
+
+                  <div className={cn(
+                    'w-8 h-8 rounded-lg flex items-center justify-center',
+                    themeStyle === 'apple-glass'
+                      ? 'bg-blue-100 text-blue-600'
+                      : 'bg-cyan-500/20 text-cyan-400'
+                  )}>
+                    {group.type === 'url-test' ? <Zap className="w-4 h-4" /> :
+                     group.type === 'fallback' ? <Rocket className="w-4 h-4" /> :
+                     <Globe className="w-4 h-4" />}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className={cn(
+                      'font-medium truncate',
+                      themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+                    )}>{translateGroupName(group.name, lang)}</div>
+                    <div className={cn(
+                      'text-xs',
+                      themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+                    )}>
+                      {group.type} · {group.useAll ? t('configGen.allNodes') : `${group.proxies.length} ${t('configGen.proxiesCount')}`}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => toggleEnabled(group.name)}
+                      className={cn(
+                        'p-2 rounded-lg transition-colors',
+                        isEnabled
+                          ? 'text-green-500 hover:bg-green-500/10'
+                          : 'text-slate-400 hover:bg-slate-500/10'
                       )}
-                    </p>
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => setEditingGroup(group)}
+                      className={cn(
+                        'p-2 rounded-lg transition-colors',
+                        themeStyle === 'apple-glass'
+                          ? 'text-slate-600 hover:bg-black/5'
+                          : 'text-slate-400 hover:bg-white/10'
+                      )}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => deleteGroup(group.name)}
+                      className="p-2 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-              )}
-            </div>
-          )
-        })}
+
+                {isExpanded && (
+                  <div className={cn(
+                    'px-4 pb-3 pt-1 border-t',
+                    themeStyle === 'apple-glass' ? 'border-black/5' : 'border-white/5'
+                  )}>
+                    <div className={cn(
+                      'text-xs mb-2',
+                      themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+                    )}>
+                      {group.description || '无描述'}
+                    </div>
+                    {group.filter && (
+                      <div className={cn(
+                        'text-xs font-mono mb-2',
+                        themeStyle === 'apple-glass' ? 'text-blue-600' : 'text-cyan-400'
+                      )}>
+                        过滤: {group.filter}
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-1">
+                      {(group.useAll ? ['全部节点'] : group.proxies).map((proxy, i) => (
+                        <span
+                          key={i}
+                          className={cn(
+                            'text-xs px-2 py-0.5 rounded',
+                            themeStyle === 'apple-glass'
+                              ? 'bg-black/5 text-slate-600'
+                              : 'bg-white/10 text-slate-300'
+                          )}
+                        >
+                          {proxy}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })
+        )}
       </div>
 
-      {/* 编辑对话框 */}
-      {editingGroup && (
+      {/* 编辑对话框 - 使用 Portal 渲染到 body */}
+      {editingGroup && createPortal(
         <EditGroupDialog
           group={editingGroup}
           onChange={setEditingGroup}
           onSave={saveEditingGroup}
           onCancel={() => setEditingGroup(null)}
-          isNew={!template.proxyGroups.some(g => g.name === editingGroup.name)}
-        />
+          isNew={!template.proxyGroups.find(g => g.name === editingGroup.name)}
+        />,
+        document.body
       )}
     </div>
   )
@@ -473,235 +588,500 @@ function RulesTab({
   setTemplate 
 }: { 
   template: ConfigTemplate
-  setTemplate: (t: ConfigTemplate) => void 
+  setTemplate: (tpl: ConfigTemplate) => void 
 }) {
-  const [editingRule, setEditingRule] = useState<{ rule: Rule; index?: number } | null>(null)
+  const { t } = useTranslation()
+  const { themeStyle } = useThemeStore()
+  const [editingRule, setEditingRule] = useState<Rule | null>(null)
+  const [editingIndex, setEditingIndex] = useState<number>(-1)
 
   const saveRules = async (rules: Rule[]) => {
     try {
       await api.put('/proxy/template/rules', rules)
       setTemplate({ ...template, rules })
-      toast.success('保存成功')
-    } catch (e: any) {
-      toast.error(e.message || '保存失败')
+    } catch {
+      // Ignore
     }
   }
 
   const deleteRule = (index: number) => {
-    const newRules = [...template.rules]
-    newRules.splice(index, 1)
+    const newRules = template.rules.filter((_, i) => i !== index)
     saveRules(newRules)
   }
 
   const addRule = () => {
     setEditingRule({
-      rule: {
-        type: 'DOMAIN-SUFFIX',
-        payload: '',
-        proxy: '🚀 节点选择',
-        noResolve: false,
-        description: '',
-      }
+      type: 'DOMAIN-SUFFIX',
+      payload: '',
+      proxy: template.proxyGroups[0]?.name || 'DIRECT',
+      noResolve: false,
+      description: ''
     })
+    setEditingIndex(-1)
   }
 
   const saveEditingRule = () => {
     if (!editingRule) return
-    const { rule, index } = editingRule
-    
-    if (!rule.payload && rule.type !== 'MATCH') {
-      toast.error('请输入规则内容')
-      return
-    }
-
     let newRules: Rule[]
-    if (index !== undefined) {
+    
+    // 检查是否有批量输入（多行）
+    const payloadLines = editingRule.payload.split('\n').filter(l => l.trim())
+    
+    if (editingIndex >= 0) {
+      // 编辑模式：直接更新单条规则
       newRules = [...template.rules]
-      newRules[index] = rule
+      newRules[editingIndex] = { ...editingRule, payload: payloadLines[0] || '' }
+    } else if (payloadLines.length > 1 && editingRule.type !== 'RULE-SET') {
+      // 新增模式 + 批量输入：生成多条规则
+      const batchRules: Rule[] = payloadLines.map(payload => ({
+        ...editingRule,
+        payload: payload.trim()
+      }))
+      newRules = [...template.rules, ...batchRules]
     } else {
-      const matchIndex = template.rules.findIndex(r => r.type === 'MATCH')
-      newRules = [...template.rules]
-      if (matchIndex >= 0) {
-        newRules.splice(matchIndex, 0, rule)
-      } else {
-        newRules.push(rule)
-      }
+      // 新增单条规则
+      newRules = [...template.rules, { ...editingRule, payload: payloadLines[0] || '' }]
     }
 
     saveRules(newRules)
     setEditingRule(null)
+    setEditingIndex(-1)
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">
-          配置分流规则，决定流量走向哪个代理组
+        <p className={cn(
+          'text-sm',
+          themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+        )}>
+          {t('configGen.rulesDescription')}
         </p>
         <button
           onClick={addRule}
-          className="inline-flex items-center px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+          className={cn(
+            'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
+            themeStyle === 'apple-glass'
+              ? 'bg-blue-500 text-white hover:bg-blue-600'
+              : 'bg-cyan-500 text-white hover:bg-cyan-600'
+          )}
         >
-          <Plus className="w-4 h-4 mr-2" />
-          添加规则
+          <Plus className="w-4 h-4" />
+          {t('configGen.addRule')}
         </button>
       </div>
 
-      <div className="rounded-xl border border-border overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-muted">
-            <tr>
-              <th className="px-4 py-3 text-left font-medium w-32">类型</th>
-              <th className="px-4 py-3 text-left font-medium">内容</th>
-              <th className="px-4 py-3 text-left font-medium w-40">代理组</th>
-              <th className="px-4 py-3 text-left font-medium">说明</th>
-              <th className="px-4 py-3 text-center font-medium w-20">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {template.rules.map((rule, index) => (
-              <tr key={index} className="border-t border-border hover:bg-muted/50">
-                <td className="px-4 py-2.5">
-                  <span className="px-2 py-0.5 rounded bg-primary/10 text-primary text-xs font-medium">
-                    {rule.type}
-                  </span>
-                </td>
-                <td className="px-4 py-2.5 font-mono text-xs">{rule.payload || '-'}</td>
-                <td className="px-4 py-2.5 text-sm">{rule.proxy}</td>
-                <td className="px-4 py-2.5 text-muted-foreground text-sm">{rule.description}</td>
-                <td className="px-4 py-2.5">
-                  <div className="flex items-center justify-center gap-1">
-                    <button
-                      onClick={() => setEditingRule({ rule: { ...rule }, index })}
-                      className="p-1.5 rounded hover:bg-muted"
-                    >
-                      <Edit2 className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => deleteRule(index)}
-                      className="p-1.5 rounded hover:bg-destructive/10 text-destructive"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+      <div className="space-y-2">
+        {template.rules.length === 0 ? (
+          <div className={cn(
+            'text-center py-12',
+            themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+          )}>
+            {t('configGen.noRules')}
+          </div>
+        ) : (
+          template.rules.map((rule, index) => (
+            <div
+              key={index}
+              className={cn(
+                'flex items-center gap-3 p-3 rounded-xl border',
+                themeStyle === 'apple-glass'
+                  ? 'bg-white/40 border-white/30'
+                  : 'bg-white/5 border-white/10'
+              )}
+            >
+              <div className={cn(
+                'px-2 py-1 rounded text-xs font-mono',
+                themeStyle === 'apple-glass'
+                  ? 'bg-purple-100 text-purple-600'
+                  : 'bg-purple-500/20 text-purple-400'
+              )}>
+                {rule.type}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className={cn(
+                  'font-mono text-sm truncate',
+                  themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-200'
+                )}>
+                  {rule.payload || `(${t('common.empty')})`}
+                </div>
+                {rule.description && (
+                  <div className={cn(
+                    'text-xs truncate',
+                    themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+                  )}>
+                    {rule.description}
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                )}
+              </div>
+              <div className={cn(
+                'px-2 py-1 rounded text-xs',
+                themeStyle === 'apple-glass'
+                  ? 'bg-green-100 text-green-600'
+                  : 'bg-green-500/20 text-green-400'
+              )}>
+                → {rule.proxy}
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => { setEditingRule(rule); setEditingIndex(index) }}
+                  className={cn(
+                    'p-2 rounded-lg transition-colors',
+                    themeStyle === 'apple-glass'
+                      ? 'text-slate-600 hover:bg-black/5'
+                      : 'text-slate-400 hover:bg-white/10'
+                  )}
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => deleteRule(index)}
+                  className="p-2 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
-      {/* 编辑对话框 */}
-      {editingRule && (
+      {editingRule && createPortal(
         <EditRuleDialog
-          rule={editingRule.rule}
+          rule={editingRule}
           proxyGroups={template.proxyGroups}
-          onChange={(rule) => setEditingRule({ ...editingRule, rule })}
+          onChange={setEditingRule}
           onSave={saveEditingRule}
-          onCancel={() => setEditingRule(null)}
-          isNew={editingRule.index === undefined}
-        />
+          onCancel={() => { setEditingRule(null); setEditingIndex(-1) }}
+          isNew={editingIndex < 0}
+        />,
+        document.body
       )}
     </div>
   )
 }
 
 // 规则集 Tab
-function ProvidersTab({ template }: { template: ConfigTemplate }) {
-  const { t } = useTranslation()
-  
+function ProvidersTab({ template, setTemplate }: { template: ConfigTemplate, setTemplate: (tpl: ConfigTemplate) => void }) {
+  const { themeStyle } = useThemeStore()
+  const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
+  const [updating, setUpdating] = useState(false)
+  const [updatedProviders, setUpdatedProviders] = useState<Set<string>>(new Set())
+  const [currentUpdating, setCurrentUpdating] = useState<string | null>(null)
+  const [editingProvider, setEditingProvider] = useState<string | null>(null)
+  const [editingUrl, setEditingUrl] = useState('')
+
+  const handleEditUrl = (providerName: string, currentUrl: string) => {
+    setEditingProvider(providerName)
+    setEditingUrl(currentUrl)
+  }
+
+  const handleSaveUrl = async () => {
+    if (!editingProvider) return
+    const newProviders = template.ruleProviders.map(p => 
+      p.name === editingProvider ? { ...p, url: editingUrl } : p
+    )
+    try {
+      await api.put('/proxy/template/providers', newProviders)
+      setTemplate({ ...template, ruleProviders: newProviders })
+    } catch {
+      // Ignore
+    }
+    setEditingProvider(null)
+  }
+
   const copyUrl = (url: string) => {
     navigator.clipboard.writeText(url)
-    toast.success(t('common.copied'))
+    setCopiedUrl(url)
+    setTimeout(() => setCopiedUrl(null), 2000)
+  }
+
+  const handleUpdateAll = async () => {
+    if (updating || template.ruleProviders.length === 0) return
+    
+    setUpdating(true)
+    setUpdatedProviders(new Set())
+    
+    // 逐个更新规则集，显示进度
+    for (const provider of template.ruleProviders) {
+      setCurrentUpdating(provider.name)
+      try {
+        // 调用后端强制更新规则集
+        await api.post(`/proxy/providers/rules/${provider.name}`)
+        // 标记为已更新
+        setUpdatedProviders(prev => new Set(prev).add(provider.name))
+      } catch {
+        // 忽略单个失败，继续更新其他
+      }
+      // 短暂延迟，让用户看到进度
+      await new Promise(r => setTimeout(r, 300))
+    }
+    
+    setCurrentUpdating(null)
+    setUpdating(false)
+    
+    // 5秒后清除完成状态
+    setTimeout(() => setUpdatedProviders(new Set()), 5000)
   }
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        规则集从远程 URL 自动下载更新，包含大量预定义规则
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {template.ruleProviders.map((provider) => (
-          <div
-            key={provider.name}
-            className="rounded-lg border border-border p-4 hover:border-primary/50 transition-colors"
+      <div className="flex items-center justify-between">
+        <p className={cn(
+          'text-sm',
+          themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+        )}>
+          规则集由系统自动管理，可在规则页面引用
+        </p>
+        {template.ruleProviders.length > 0 && (
+          <button
+            onClick={handleUpdateAll}
+            disabled={updating}
+            className={cn(
+              'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+              updating
+                ? 'opacity-50 cursor-not-allowed'
+                : themeStyle === 'apple-glass'
+                  ? 'bg-blue-500 text-white hover:bg-blue-600'
+                  : 'bg-cyan-500 text-white hover:bg-cyan-600'
+            )}
           >
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <Database className="w-4 h-4 text-primary" />
-                <span className="font-medium">{provider.name}</span>
-              </div>
-              <span className="text-xs px-2 py-0.5 rounded bg-muted">{provider.behavior}</span>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">{provider.description}</p>
-            <div 
-              className="text-xs text-muted-foreground font-mono mt-2 p-2 bg-muted/50 rounded cursor-pointer hover:bg-muted break-all"
-              onClick={() => copyUrl(provider.url)}
-              title="点击复制 URL"
-            >
-              {provider.url}
-            </div>
+            {updating ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <RefreshCw className="w-3.5 h-3.5" />
+            )}
+            {updating ? '更新中...' : '批量更新'}
+          </button>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        {template.ruleProviders.length === 0 ? (
+          <div className={cn(
+            'text-center py-12',
+            themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+          )}>
+            暂无规则集
           </div>
-        ))}
+        ) : (
+          template.ruleProviders.map((provider) => {
+            const isUpdating = currentUpdating === provider.name
+            const isUpdated = updatedProviders.has(provider.name)
+            
+            return (
+              <div
+                key={provider.name}
+                className={cn(
+                  'p-3 rounded-xl border group transition-colors',
+                  isUpdated && 'ring-1 ring-green-500/50',
+                  themeStyle === 'apple-glass'
+                    ? 'bg-white/40 border-white/30'
+                    : 'bg-white/5 border-white/10'
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {/* 状态图标 */}
+                    <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
+                      {isUpdating ? (
+                        <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+                      ) : isUpdated ? (
+                        <Check className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <Database className={cn(
+                          'w-5 h-5',
+                          themeStyle === 'apple-glass' ? 'text-orange-500' : 'text-orange-400'
+                        )} />
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className={cn(
+                        'font-medium',
+                        themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+                      )}>{provider.name}</div>
+                      <div className={cn(
+                        'text-xs',
+                        themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+                      )}>
+                        {provider.behavior} · {provider.type}
+                      </div>
+                      {/* URL 显示/编辑 */}
+                      {editingProvider === provider.name ? (
+                        <div className="flex items-center gap-2 mt-1">
+                          <input
+                            type="text"
+                            value={editingUrl}
+                            onChange={(e) => setEditingUrl(e.target.value)}
+                            className={cn(
+                              'flex-1 text-xs px-2 py-1 rounded border',
+                              themeStyle === 'apple-glass'
+                                ? 'bg-white border-slate-200 text-slate-700'
+                                : 'bg-neutral-800 border-neutral-600 text-slate-200'
+                            )}
+                            autoFocus
+                          />
+                          <button
+                            onClick={handleSaveUrl}
+                            className="p-1 rounded text-green-500 hover:bg-green-500/10"
+                          >
+                            <Check className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setEditingProvider(null)}
+                            className="p-1 rounded text-red-500 hover:bg-red-500/10"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : provider.url && (
+                        <div className={cn(
+                          'text-[10px] truncate mt-1 cursor-pointer hover:underline',
+                          themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+                        )} onClick={() => handleEditUrl(provider.name, provider.url)}>
+                          {provider.url}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {/* 编辑 URL 按钮 */}
+                    <button
+                      onClick={() => handleEditUrl(provider.name, provider.url || '')}
+                      className={cn(
+                        'p-1.5 rounded-lg transition-colors',
+                        themeStyle === 'apple-glass'
+                          ? 'text-slate-400 hover:text-slate-600 hover:bg-black/5'
+                          : 'text-slate-500 hover:text-slate-300 hover:bg-white/10'
+                      )}
+                      title="编辑 URL"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    {/* 复制 URL 按钮 */}
+                    {provider.url && (
+                      <button
+                        onClick={() => copyUrl(provider.url)}
+                        className={cn(
+                          'p-1.5 rounded-lg transition-colors',
+                          copiedUrl === provider.url
+                            ? 'text-green-500'
+                            : themeStyle === 'apple-glass'
+                              ? 'text-slate-400 hover:text-slate-600 hover:bg-black/5'
+                              : 'text-slate-500 hover:text-slate-300 hover:bg-white/10'
+                        )}
+                        title="复制 URL"
+                      >
+                        {copiedUrl === provider.url ? (
+                          <Check className="w-4 h-4" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </button>
+                    )}
+                    <div className={cn(
+                      'text-xs',
+                      isUpdated ? 'text-green-500' : themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+                    )}>
+                      {isUpdated ? '已更新' : `${provider.interval / 3600}h 更新`}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )
+          })
+        )}
       </div>
     </div>
   )
 }
 
-// 预览 Tab
-function PreviewTab({ template }: { template: ConfigTemplate }) {
-  const generatePreview = () => {
-    // 只包含启用的分组
-    const enabledGroups = template.proxyGroups.filter(g => g.enabled !== false)
-    const groups = enabledGroups.map(g => ({
-      name: g.name,
-      type: g.type,
-      proxies: g.useAll ? ['...所有节点...'] : g.proxies,
-      ...(g.url && { url: g.url }),
-      ...(g.interval && { interval: g.interval }),
-      ...(g.filter && { filter: g.filter }),
-    }))
+// 预览 Tab - 加载实际生成的 config.yaml
+function PreviewTab() {
+  const { t } = useTranslation()
+  const { themeStyle } = useThemeStore()
+  const [copied, setCopied] = useState(false)
+  const [configContent, setConfigContent] = useState<string>('')
+  const [loading, setLoading] = useState(true)
 
-    const rules = template.rules.map(r => {
-      let rule = `${r.type}`
-      if (r.payload) rule += `,${r.payload}`
-      rule += `,${r.proxy}`
-      if (r.noResolve) rule += ',no-resolve'
-      return rule
-    })
+  // 加载生成的配置文件
+  const loadConfig = async () => {
+    try {
+      setLoading(true)
+      const data = await api.get<{ content: string }>('/proxy/config/preview')
+      if (data?.content) {
+        setConfigContent(data.content)
+      } else {
+        setConfigContent('# 配置文件未生成\n# 请先点击上方的「生成配置」按钮')
+      }
+    } catch {
+      setConfigContent('# 配置文件未生成\n# 请先点击上方的「生成配置」按钮')
+    } finally {
+      setLoading(false)
+    }
+  }
 
-    return `# P-BOX 生成的 Mihomo 配置
-# 代理组: ${enabledGroups.length} 个 (${template.proxyGroups.length - enabledGroups.length} 个已禁用)
-# 规则: ${template.rules.length} 条
-# 规则集: ${template.ruleProviders.length} 个
+  useEffect(() => {
+    loadConfig()
+  }, [])
 
-proxy-groups:
-${groups.map(g => `  - name: "${g.name}"
-    type: ${g.type}
-    proxies: [${g.proxies.map(p => `"${p}"`).join(', ')}]${g.filter ? `\n    filter: "${g.filter}"` : ''}`).join('\n')}
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(configContent)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
-rules:
-${rules.map(r => `  - ${r}`).join('\n')}`
+  const handleRefresh = () => {
+    loadConfig()
   }
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <p className="text-sm text-muted-foreground">配置预览（仅展示代理组和规则部分）</p>
-        <button
-          onClick={() => {
-            navigator.clipboard.writeText(generatePreview())
-            toast.success('已复制到剪贴板')
-          }}
-          className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm hover:bg-muted"
-        >
-          <Download className="w-4 h-4 mr-2" />
-          复制
-        </button>
+        <p className={cn(
+          'text-sm',
+          themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+        )}>
+          {t('configGenerator.previewDescription') || '预览生成的 config.yaml 配置文件'}
+        </p>
+        <div className="flex gap-2">
+          <button
+            onClick={handleRefresh}
+            className={cn(
+              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all',
+              themeStyle === 'apple-glass'
+                ? 'bg-black/5 text-slate-600 hover:bg-black/10'
+                : 'bg-white/10 text-slate-300 hover:bg-white/20'
+            )}
+          >
+            <RefreshCw className="w-4 h-4" />
+            {t('common.refresh') || '刷新'}
+          </button>
+          <button
+            onClick={handleCopy}
+            disabled={!configContent}
+            className={cn(
+              'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all',
+              copied
+                ? 'bg-green-500/20 text-green-500'
+                : themeStyle === 'apple-glass'
+                  ? 'bg-black/5 text-slate-600 hover:bg-black/10'
+                  : 'bg-white/10 text-slate-300 hover:bg-white/20'
+            )}
+          >
+            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copied ? t('common.copied') || '已复制' : t('common.copy') || '复制'}
+          </button>
+        </div>
       </div>
-      <pre className="p-4 rounded-xl bg-muted/50 border border-border overflow-auto text-sm font-mono max-h-[500px]">
-        {generatePreview()}
+
+      <pre className={cn(
+        'p-4 rounded-xl overflow-auto text-sm font-mono max-h-[600px]',
+        themeStyle === 'apple-glass'
+          ? 'bg-slate-100 text-slate-700 border border-black/10'
+          : 'bg-black/30 text-green-400 border border-white/10'
+      )}>
+        {loading ? t('common.loading') || '加载中...' : configContent}
       </pre>
     </div>
   )
@@ -721,137 +1101,143 @@ function EditGroupDialog({
   onCancel: () => void
   isNew: boolean
 }) {
+  const { themeStyle } = useThemeStore()
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-card rounded-xl p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto">
-        <h3 className="text-lg font-semibold mb-4">{isNew ? '添加' : '编辑'}代理组</h3>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className={cn(
+        'w-full max-w-lg max-h-[80vh] overflow-y-auto rounded-2xl p-6',
+        themeStyle === 'apple-glass'
+          ? 'bg-white/90 backdrop-blur-xl border border-white/50'
+          : 'bg-slate-900/95 backdrop-blur-xl border border-white/10'
+      )}>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className={cn(
+            'text-lg font-semibold',
+            themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+          )}>{isNew ? '添加' : '编辑'}代理组</h3>
+          <button onClick={onCancel} className="p-2 rounded-lg hover:bg-black/5">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">名称 *</label>
+            <label className={cn(
+              'block text-sm font-medium mb-1.5',
+              themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+            )}>名称 *</label>
             <input
               type="text"
               value={group.name}
               onChange={(e) => onChange({ ...group, name: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+              className="form-input"
               placeholder="例如：🚀 节点选择"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">类型</label>
+            <label className={cn(
+              'block text-sm font-medium mb-1.5',
+              themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+            )}>类型</label>
             <select
               value={group.type}
               onChange={(e) => onChange({ ...group, type: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+              className="form-input"
             >
               <option value="select">select - 手动选择</option>
-              <option value="url-test">url-test - 自动测速选优</option>
+              <option value="url-test">url-test - 自动测速</option>
               <option value="fallback">fallback - 故障转移</option>
               <option value="load-balance">load-balance - 负载均衡</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">说明</label>
+            <label className={cn(
+              'block text-sm font-medium mb-1.5',
+              themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+            )}>说明</label>
             <input
               type="text"
               value={group.description}
               onChange={(e) => onChange({ ...group, description: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+              className="form-input"
               placeholder="描述这个分组的用途"
             />
           </div>
 
           {(group.type === 'url-test' || group.type === 'fallback') && (
             <div>
-              <label className="block text-sm font-medium mb-1">节点过滤正则</label>
+              <label className={cn(
+                'block text-sm font-medium mb-1.5',
+                themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+              )}>节点过滤正则</label>
               <input
                 type="text"
                 value={group.filter || ''}
                 onChange={(e) => onChange({ ...group, filter: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background font-mono text-sm"
+                className="form-input font-mono"
                 placeholder="(?i)港|HK|Hong"
               />
-              <p className="text-xs text-muted-foreground mt-1">匹配节点名称的正则表达式</p>
             </div>
           )}
 
           <div>
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
               <input
                 type="checkbox"
                 checked={group.useAll || false}
                 onChange={(e) => onChange({ ...group, useAll: e.target.checked })}
                 className="rounded"
               />
-              <span>使用全部订阅节点</span>
+              <span className={cn(
+                themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+              )}>使用全部订阅节点</span>
             </label>
           </div>
 
           {!group.useAll && (
             <div>
-              <label className="block text-sm font-medium mb-1">代理列表（每行一个）</label>
-              
-              {/* 快捷添加按钮 */}
-              <div className="flex flex-wrap gap-1.5 mb-2">
-                <span className="text-xs text-muted-foreground mr-1">快捷添加:</span>
-                {[
-                  { label: 'DIRECT', value: 'DIRECT', color: 'bg-green-500/10 text-green-600' },
-                  { label: 'REJECT', value: 'REJECT', color: 'bg-red-500/10 text-red-600' },
-                  { label: '节点选择', value: '节点选择', color: 'bg-blue-500/10 text-blue-600' },
-                  { label: '自动选择', value: '自动选择', color: 'bg-purple-500/10 text-purple-600' },
-                  { label: '故障转移', value: '故障转移', color: 'bg-orange-500/10 text-orange-600' },
-                  { label: '香港节点', value: '香港节点', color: 'bg-muted' },
-                  { label: '台湾节点', value: '台湾节点', color: 'bg-muted' },
-                  { label: '日本节点', value: '日本节点', color: 'bg-muted' },
-                  { label: '美国节点', value: '美国节点', color: 'bg-muted' },
-                  { label: '新加坡节点', value: '新加坡节点', color: 'bg-muted' },
-                  { label: '手动节点', value: '手动节点', color: 'bg-cyan-500/10 text-cyan-600' },
-                ].map((item) => (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => {
-                      if (!group.proxies.includes(item.value)) {
-                        onChange({ ...group, proxies: [...group.proxies, item.value] })
-                      }
-                    }}
-                    disabled={group.proxies.includes(item.value)}
-                    className={`px-2 py-0.5 rounded text-xs font-medium transition-colors ${item.color} ${
-                      group.proxies.includes(item.value) ? 'opacity-40 cursor-not-allowed' : 'hover:opacity-80'
-                    }`}
-                  >
-                    + {item.label}
-                  </button>
-                ))}
-              </div>
-
+              <label className={cn(
+                'block text-sm font-medium mb-1.5',
+                themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+              )}>代理列表（每行一个）</label>
               <textarea
                 value={group.proxies.join('\n')}
                 onChange={(e) => onChange({ 
                   ...group, 
                   proxies: e.target.value.split('\n').filter(p => p.trim()) 
                 })}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background h-32 font-mono text-sm"
+                className="form-input h-32 font-mono text-sm"
                 placeholder="节点选择&#10;自动选择&#10;DIRECT"
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                提示：顺序决定默认选中项，第一个为默认
-              </p>
             </div>
           )}
         </div>
 
         <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onCancel} className="px-4 py-2 rounded-lg hover:bg-muted">
+          <button 
+            onClick={onCancel} 
+            className={cn(
+              'px-4 py-2 rounded-lg text-sm font-medium',
+              themeStyle === 'apple-glass'
+                ? 'hover:bg-black/5 text-slate-600'
+                : 'hover:bg-white/10 text-slate-400'
+            )}
+          >
             取消
           </button>
           <button
             onClick={onSave}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white',
+              themeStyle === 'apple-glass'
+                ? 'bg-blue-500 hover:bg-blue-600'
+                : 'bg-cyan-500 hover:bg-cyan-600'
+            )}
           >
-            <Save className="w-4 h-4 inline mr-2" />
+            <Save className="w-4 h-4" />
             保存
           </button>
         </div>
@@ -876,63 +1262,98 @@ function EditRuleDialog({
   onCancel: () => void
   isNew: boolean
 }) {
+  const { themeStyle } = useThemeStore()
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-card rounded-xl p-6 w-full max-w-lg">
-        <h3 className="text-lg font-semibold mb-4">{isNew ? '添加' : '编辑'}规则</h3>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className={cn(
+        'w-full max-w-lg rounded-2xl p-6',
+        themeStyle === 'apple-glass'
+          ? 'bg-white/90 backdrop-blur-xl border border-white/50'
+          : 'bg-slate-900/95 backdrop-blur-xl border border-white/10'
+      )}>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className={cn(
+            'text-lg font-semibold',
+            themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+          )}>{isNew ? '添加' : '编辑'}规则</h3>
+          <button onClick={onCancel} className="p-2 rounded-lg hover:bg-black/5">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">规则类型</label>
+            <label className={cn(
+              'block text-sm font-medium mb-1.5',
+              themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+            )}>规则类型</label>
             <select
               value={rule.type}
               onChange={(e) => onChange({ ...rule, type: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+              className="form-input"
             >
-              <option value="DOMAIN">DOMAIN - 完整域名匹配</option>
+              <option value="DOMAIN">DOMAIN - 完整域名</option>
               <option value="DOMAIN-SUFFIX">DOMAIN-SUFFIX - 域名后缀</option>
               <option value="DOMAIN-KEYWORD">DOMAIN-KEYWORD - 域名关键字</option>
               <option value="IP-CIDR">IP-CIDR - IP 地址段</option>
-              <option value="GEOIP">GEOIP - 地理位置 IP</option>
-              <option value="RULE-SET">RULE-SET - 引用规则集</option>
+              <option value="GEOIP">GEOIP - 地理 IP</option>
+              <option value="RULE-SET">RULE-SET - 规则集</option>
               <option value="MATCH">MATCH - 兜底规则</option>
             </select>
           </div>
 
           {rule.type !== 'MATCH' && (
             <div>
-              <label className="block text-sm font-medium mb-1">规则内容 *</label>
+              <label className={cn(
+                'block text-sm font-medium mb-1.5',
+                themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+              )}>
+                规则内容 * 
+                <span className={cn(
+                  'text-xs ml-2 font-normal',
+                  themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+                )}>
+                  {rule.type === 'RULE-SET' ? '规则集名称' : '(批量输入：一行一条)'}
+                </span>
+              </label>
               <textarea
                 value={rule.payload}
-                onChange={(e) => onChange({ ...rule, payload: e.target.value.split('\n')[0] || '' })}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background h-20 font-mono text-sm resize-none"
+                onChange={(e) => onChange({ ...rule, payload: e.target.value })}
+                className="form-input font-mono min-h-[100px] resize-y"
                 placeholder={
-                  rule.type === 'DOMAIN' ? 'www.google.com\n每行一个域名' :
-                  rule.type === 'DOMAIN-SUFFIX' ? 'google.com\n域名后缀匹配' :
-                  rule.type === 'DOMAIN-KEYWORD' ? 'google\n域名包含关键字' :
-                  rule.type === 'IP-CIDR' ? '192.168.0.0/16\nIP 地址段' :
-                  rule.type === 'GEOIP' ? 'CN\n国家代码' :
-                  rule.type === 'RULE-SET' ? 'google-domain\n规则集名称' : ''
+                  rule.type === 'DOMAIN' ? 'www.google.com\nwww.example.com' :
+                  rule.type === 'DOMAIN-SUFFIX' ? 'google.com\nexample.com' :
+                  rule.type === 'DOMAIN-KEYWORD' ? 'google\nexample' :
+                  rule.type === 'IP-CIDR' ? '192.168.0.0/16\n10.0.0.0/8' :
+                  rule.type === 'GEOIP' ? 'CN' :
+                  rule.type === 'RULE-SET' ? 'google-domain' : ''
                 }
+                rows={rule.type === 'RULE-SET' ? 1 : 4}
               />
-              <p className="text-xs text-muted-foreground mt-1">
-                {rule.type === 'DOMAIN' && '完整域名，如 www.google.com'}
-                {rule.type === 'DOMAIN-SUFFIX' && '域名后缀，如 google.com 会匹配 *.google.com'}
-                {rule.type === 'DOMAIN-KEYWORD' && '域名关键字，如 google 会匹配包含 google 的域名'}
-                {rule.type === 'IP-CIDR' && 'IP 地址段，如 192.168.0.0/16'}
-                {rule.type === 'GEOIP' && '国家代码，如 CN、US、JP'}
-                {rule.type === 'RULE-SET' && '引用已定义的规则集'}
-              </p>
+              {rule.type !== 'RULE-SET' && rule.payload && rule.payload.includes('\n') && (
+                <div className={cn(
+                  'text-xs mt-1',
+                  themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+                )}>
+                  将生成 {rule.payload.split('\n').filter(l => l.trim()).length} 条规则
+                </div>
+              )}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-1">目标代理组</label>
+            <label className={cn(
+              'block text-sm font-medium mb-1.5',
+              themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+            )}>目标代理组</label>
             <select
               value={rule.proxy}
               onChange={(e) => onChange({ ...rule, proxy: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background"
+              className="form-input"
             >
+              <option value="DIRECT">DIRECT</option>
+              <option value="REJECT">REJECT</option>
               {proxyGroups.map(g => (
                 <option key={g.name} value={g.name}>{g.name}</option>
               ))}
@@ -940,38 +1361,56 @@ function EditRuleDialog({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">说明</label>
+            <label className={cn(
+              'block text-sm font-medium mb-1.5',
+              themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+            )}>说明</label>
             <input
               type="text"
               value={rule.description}
               onChange={(e) => onChange({ ...rule, description: e.target.value })}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background"
-              placeholder="这条规则的作用"
+              className="form-input"
+              placeholder="规则用途描述"
             />
           </div>
 
           {(rule.type === 'IP-CIDR' || rule.type === 'GEOIP' || rule.type === 'RULE-SET') && (
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
               <input
                 type="checkbox"
                 checked={rule.noResolve}
                 onChange={(e) => onChange({ ...rule, noResolve: e.target.checked })}
                 className="rounded"
               />
-              <span>no-resolve（不解析域名，用于 IP 规则）</span>
+              <span className={cn(
+                themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+              )}>no-resolve（不解析域名）</span>
             </label>
           )}
         </div>
 
         <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onCancel} className="px-4 py-2 rounded-lg hover:bg-muted">
+          <button 
+            onClick={onCancel} 
+            className={cn(
+              'px-4 py-2 rounded-lg text-sm font-medium',
+              themeStyle === 'apple-glass'
+                ? 'hover:bg-black/5 text-slate-600'
+                : 'hover:bg-white/10 text-slate-400'
+            )}
+          >
             取消
           </button>
           <button
             onClick={onSave}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+            className={cn(
+              'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-white',
+              themeStyle === 'apple-glass'
+                ? 'bg-blue-500 hover:bg-blue-600'
+                : 'bg-cyan-500 hover:bg-cyan-600'
+            )}
           >
-            <Save className="w-4 h-4 inline mr-2" />
+            <Save className="w-4 h-4" />
             保存
           </button>
         </div>

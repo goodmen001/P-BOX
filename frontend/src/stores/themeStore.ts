@@ -1,46 +1,65 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type Theme = 'light' | 'dark' | 'system'
+// Theme types: apple-glass (毛玻璃风格) and apple-pro-dark (专业深色)
+export type ThemeStyle = 'apple-glass' | 'apple-pro-dark'
+export type ColorScheme = 'light' | 'dark' | 'system'
 
 interface ThemeState {
-  theme: Theme
-  setTheme: (theme: Theme) => void
+  themeStyle: ThemeStyle
+  colorScheme: ColorScheme
+  setThemeStyle: (style: ThemeStyle) => void
+  setColorScheme: (scheme: ColorScheme) => void
 }
 
 export const useThemeStore = create<ThemeState>()(
   persist(
     (set) => ({
-      theme: 'system',
-      setTheme: (theme) => {
-        set({ theme })
-        applyTheme(theme)
+      themeStyle: 'apple-glass',
+      colorScheme: 'dark',
+      setThemeStyle: (themeStyle) => {
+        set({ themeStyle })
+        applyTheme(themeStyle, useThemeStore.getState().colorScheme)
+      },
+      setColorScheme: (colorScheme) => {
+        set({ colorScheme })
+        applyTheme(useThemeStore.getState().themeStyle, colorScheme)
       },
     }),
-    { name: 'p-box-theme' }
+    { name: 'p-box-theme-v2' }
   )
 )
 
-function applyTheme(theme: Theme) {
+function applyTheme(style: ThemeStyle, scheme: ColorScheme) {
   const root = document.documentElement
+  
+  // Determine if dark mode
   const isDark =
-    theme === 'dark' ||
-    (theme === 'system' &&
+    scheme === 'dark' ||
+    (scheme === 'system' &&
       window.matchMedia('(prefers-color-scheme: dark)').matches)
-
+  
+  // Apply color scheme
   root.classList.toggle('dark', isDark)
+  
+  // Apply theme style
+  root.classList.remove('theme-apple-glass', 'theme-apple-pro-dark')
+  root.classList.add(`theme-${style}`)
+  
+  // Set data attribute for CSS
+  root.setAttribute('data-theme-style', style)
 }
 
 export function initTheme() {
-  const theme = useThemeStore.getState().theme
-  applyTheme(theme)
+  const { themeStyle, colorScheme } = useThemeStore.getState()
+  applyTheme(themeStyle, colorScheme)
 
-  // 监听系统主题变化
+  // Listen for system theme changes
   window
     .matchMedia('(prefers-color-scheme: dark)')
     .addEventListener('change', () => {
-      if (useThemeStore.getState().theme === 'system') {
-        applyTheme('system')
+      if (useThemeStore.getState().colorScheme === 'system') {
+        applyTheme(useThemeStore.getState().themeStyle, 'system')
       }
     })
 }

@@ -1,21 +1,19 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { X, XCircle, ArrowUp, ArrowDown, Search, Loader2 } from 'lucide-react'
-import { toast } from 'sonner'
+import { Search, X, Trash2 } from 'lucide-react'
 import { mihomoApi } from '@/api/mihomo'
+import { formatBytes, cn } from '@/lib/utils'
+import { useThemeStore } from '@/stores/themeStore'
 
 interface Connection {
   id: string
   metadata: {
+    host: string
+    destinationPort: string
+    sourceIP: string
+    sourcePort: string
     network: string
     type: string
-    sourceIP: string
-    destinationIP: string
-    sourcePort: string
-    destinationPort: string
-    host: string
-    dnsMode: string
-    processPath?: string
   }
   upload: number
   download: number
@@ -27,170 +25,170 @@ interface Connection {
 
 export default function ConnectionsPage() {
   const { t } = useTranslation()
+  const { themeStyle } = useThemeStore()
   const [connections, setConnections] = useState<Connection[]>([])
-  const [totalUpload, setTotalUpload] = useState(0)
-  const [totalDownload, setTotalDownload] = useState(0)
   const [search, setSearch] = useState('')
-  const [loading, setLoading] = useState(true)
-  const wsRef = useRef<WebSocket | null>(null)
+  const [totalUp, setTotalUp] = useState(0)
+  const [totalDown, setTotalDown] = useState(0)
 
   useEffect(() => {
-    // 使用 WebSocket 实时更新
     const ws = mihomoApi.createConnectionsWs((data) => {
-      setConnections(data.connections || [])
-      setTotalUpload(data.uploadTotal || 0)
-      setTotalDownload(data.downloadTotal || 0)
-      setLoading(false)
+      const typedData = data as { 
+        connections?: Connection[]
+        uploadTotal?: number
+        downloadTotal?: number 
+      }
+      if (typedData.connections) {
+        setConnections(typedData.connections)
+      }
+      if (typedData.uploadTotal !== undefined) {
+        setTotalUp(typedData.uploadTotal)
+      }
+      if (typedData.downloadTotal !== undefined) {
+        setTotalDown(typedData.downloadTotal)
+      }
     })
-    wsRef.current = ws
 
-    ws.onerror = () => {
-      setLoading(false)
-    }
-
-    return () => {
-      ws.close()
-    }
+    return () => ws.close()
   }, [])
 
   const handleCloseAll = async () => {
     try {
       await mihomoApi.closeAllConnections()
-      toast.success('已关闭所有连接')
-    } catch (e: any) {
-      toast.error(e.message || '关闭失败')
+    } catch {
+      // Ignore errors
     }
   }
 
   const handleClose = async (id: string) => {
     try {
       await mihomoApi.closeConnection(id)
-    } catch (e: any) {
-      toast.error(e.message || '关闭失败')
+    } catch {
+      // Ignore errors
     }
   }
 
-  const formatBytes = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B'
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
-    if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(2) + ' MB'
-    return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB'
-  }
-
-  // 过滤连接
-  const filteredConnections = connections.filter(conn => {
+  const filteredConnections = connections.filter((conn) => {
     if (!search) return true
+    const host = conn.metadata.host.toLowerCase()
+    const rule = conn.rule.toLowerCase()
     const searchLower = search.toLowerCase()
-    return (
-      conn.metadata.host?.toLowerCase().includes(searchLower) ||
-      conn.metadata.destinationIP?.includes(search) ||
-      conn.chains.some(c => c.toLowerCase().includes(searchLower)) ||
-      conn.rule?.toLowerCase().includes(searchLower)
-    )
+    return host.includes(searchLower) || rule.includes(searchLower)
   })
 
   return (
-    <div className="space-y-3 lg:space-y-4">
+    <div className="space-y-4">
+      {/* Stats bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <p className="text-xs lg:text-sm text-muted-foreground">
-          {connections.length} 个连接 · ↑ {formatBytes(totalUpload)} · ↓ {formatBytes(totalDownload)}
-        </p>
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="relative flex-1 sm:flex-none">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="搜索..."
-              className="w-full sm:w-40 lg:w-48 pl-9 pr-4 py-1.5 lg:py-2 rounded-lg border border-border bg-background text-sm"
-            />
+        <div className={cn(
+          "flex flex-wrap items-center gap-3 sm:gap-6 text-xs sm:text-sm",
+          themeStyle === 'apple-glass' ? 'text-slate-600' : 'text-slate-400'
+        )}>
+          <div>
+            <span>{t('connections.active')}: </span>
+            <span className={cn(
+              "font-medium",
+              themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+            )}>{connections.length}</span>
           </div>
-          <button 
-            onClick={handleCloseAll}
-            className="inline-flex items-center px-3 lg:px-4 py-1.5 lg:py-2 text-sm rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors whitespace-nowrap"
-          >
-            <XCircle className="w-4 h-4 mr-1 lg:mr-2" />
-            <span className="hidden sm:inline">{t('connections.closeAll')}</span>
-            <span className="sm:hidden">关闭</span>
-          </button>
+          <div>
+            <span>{t('connections.upload')}: </span>
+            <span className="font-medium text-blue-500">{formatBytes(totalUp)}</span>
+          </div>
+          <div>
+            <span>{t('connections.download')}: </span>
+            <span className="font-medium text-green-500">{formatBytes(totalDown)}</span>
+          </div>
         </div>
+        <button
+          onClick={handleCloseAll}
+          className="control-btn danger text-xs flex-shrink-0"
+        >
+          <Trash2 className="w-3 h-3" />
+          <span className="hidden sm:inline">{t('common.closeAll')}</span>
+          <span className="sm:hidden">{t('common.close')}</span>
+        </button>
       </div>
 
-      <div className="rounded-xl border border-border bg-card overflow-hidden">
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-          </div>
-        ) : filteredConnections.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            {connections.length === 0 ? '暂无活动连接' : '没有匹配的连接'}
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">{t('connections.host')}</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">{t('connections.network')}</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">{t('connections.rule')}</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">{t('connections.chains')}</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-muted-foreground">
-                    <ArrowUp className="w-4 h-4 inline mr-1" />
-                    <ArrowDown className="w-4 h-4 inline" />
-                  </th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground w-12"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filteredConnections.slice(0, 100).map((conn) => (
-                  <tr key={conn.id} className="hover:bg-muted/30 transition-colors">
-                    <td className="px-4 py-2.5">
-                      <div className="font-medium truncate max-w-[200px]" title={conn.metadata.host || conn.metadata.destinationIP}>
-                        {conn.metadata.host || conn.metadata.destinationIP}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        :{conn.metadata.destinationPort}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2.5 text-sm">
-                      <span className="px-1.5 py-0.5 rounded text-xs bg-muted">
-                        {conn.metadata.network}/{conn.metadata.type}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <span className="px-2 py-0.5 rounded text-xs bg-primary/10 text-primary">
-                        {conn.rule}
-                      </span>
-                      {conn.rulePayload && (
-                        <span className="ml-1 text-xs text-muted-foreground">{conn.rulePayload}</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2.5 text-sm text-muted-foreground truncate max-w-[150px]" title={conn.chains.join(' → ')}>
-                      {conn.chains.join(' → ')}
-                    </td>
-                    <td className="px-4 py-2.5 text-right font-mono text-xs">
-                      <span className="text-green-500">{formatBytes(conn.upload)}</span>
-                      <span className="mx-1 text-muted-foreground">/</span>
-                      <span className="text-blue-500">{formatBytes(conn.download)}</span>
-                    </td>
-                    <td className="px-4 py-2.5 text-center">
-                      <button 
-                        onClick={() => handleClose(conn.id)}
-                        className="p-1 rounded hover:bg-destructive/10 text-destructive transition-colors"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {filteredConnections.length > 100 && (
-              <div className="text-center py-2 text-sm text-muted-foreground bg-muted/30">
-                仅显示前 100 条连接，共 {filteredConnections.length} 条
-              </div>
-            )}
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder={t('connections.searchPlaceholder')}
+          className="form-input !pl-10"
+        />
+      </div>
+
+      {/* Connections table */}
+      <div className="glass-card overflow-x-auto">
+        <table className="data-table">
+          <thead>
+            <tr className="bg-white/5">
+              <th>{t('connections.host')}</th>
+              <th>{t('connections.network')}</th>
+              <th>{t('connections.type')}</th>
+              <th>{t('connections.chains')}</th>
+              <th>{t('connections.rule')}</th>
+              <th>{t('connections.upload')}</th>
+              <th>{t('connections.download')}</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredConnections.map((conn) => (
+              <tr key={conn.id} className="group">
+                <td className="text-foreground">
+                  <div className="flex items-center gap-2">
+                    <img 
+                      src={`https://www.google.com/s2/favicons?domain=${conn.metadata.host}`}
+                      className="w-4 h-4 rounded opacity-60 group-hover:opacity-100"
+                      alt=""
+                    />
+                    <span className="truncate max-w-[200px]">
+                      {conn.metadata.host}:{conn.metadata.destinationPort}
+                    </span>
+                  </div>
+                </td>
+                <td className="text-muted-foreground uppercase text-[10px]">
+                  {conn.metadata.network}
+                </td>
+                <td className="text-muted-foreground text-[10px]">
+                  {conn.metadata.type}
+                </td>
+                <td className="text-muted-foreground text-[10px]">
+                  {conn.chains.join(' → ')}
+                </td>
+                <td>
+                  <span className="badge info">{conn.rule}</span>
+                </td>
+                <td className="text-blue-400 text-xs">
+                  {formatBytes(conn.upload)}
+                </td>
+                <td className="text-green-400 text-xs">
+                  {formatBytes(conn.download)}
+                </td>
+                <td>
+                  <button
+                    onClick={() => handleClose(conn.id)}
+                    className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-500/20 rounded transition-all"
+                  >
+                    <X className="w-3.5 h-3.5 text-red-400" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {filteredConnections.length === 0 && (
+          <div className={cn(
+            "text-center py-12 text-sm",
+            themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-neutral-500'
+          )}>
+            {t('common.loading')}
           </div>
         )}
       </div>

@@ -6,7 +6,7 @@ interface LayoutProps {
   children: ReactNode
 }
 
-// 侧边栏状态上下文
+// Sidebar state context
 interface SidebarContextType {
   isOpen: boolean
   toggle: () => void
@@ -32,25 +32,27 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <SidebarContext.Provider value={sidebarContext}>
-      <div className="flex h-screen bg-background">
-        {/* 移动端遮罩 */}
+      <div className="flex h-screen overflow-hidden">
+        {/* Mobile overlay */}
         {sidebarOpen && (
           <div 
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
-        {/* 侧边栏 */}
+        {/* Sidebar */}
         <Sidebar />
 
-        {/* 主内容区 */}
-        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          {/* 头部 */}
-          <Header />
+        {/* Main content area - with glass effect for Apple Glass theme */}
+        <div className="main-content flex-1 flex flex-col overflow-hidden min-w-0">
+          {/* Header */}
+          <div className="relative z-50">
+            <Header />
+          </div>
 
-          {/* 页面内容 */}
-          <main className="flex-1 overflow-auto p-4 lg:p-6">
+          {/* Page content */}
+          <main className="flex-1 overflow-auto p-4 lg:p-6 relative z-10">
             <div className="animate-fadeIn">{children}</div>
           </main>
         </div>

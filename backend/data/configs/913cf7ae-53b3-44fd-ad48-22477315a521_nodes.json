@@ -1,429 +1,490 @@
 [
   {
-    "Name": "剩余流量：177.92 GB",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "剩余流量：146.97 GB",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%E5%89%A9%E4%BD%99%E6%B5%81%E9%87%8F%EF%BC%9A146.97%20GB"
   },
   {
-    "Name": "距离下次重置剩余：21 天",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "距离下次重置剩余：20 天",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%E8%B7%9D%E7%A6%BB%E4%B8%8B%E6%AC%A1%E9%87%8D%E7%BD%AE%E5%89%A9%E4%BD%99%EF%BC%9A20%20%E5%A4%A9"
   },
   {
-    "Name": "套餐到期：2025-12-26",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "套餐到期：2025-12-26",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%E5%A5%97%E9%A4%90%E5%88%B0%E6%9C%9F%EF%BC%9A2025-12-26"
   },
   {
-    "Name": "🏘️ 官网：Candytally.club",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "🏘️ 官网：Candytally.club",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%8F%98%EF%B8%8F%20%E5%AE%98%E7%BD%91%EF%BC%9ACandytally.club"
   },
   {
-    "Name": "🔗 节点异常请刷新订阅",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "🔗 节点异常请刷新订阅",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%94%97%20%E8%8A%82%E7%82%B9%E5%BC%82%E5%B8%B8%E8%AF%B7%E5%88%B7%E6%96%B0%E8%AE%A2%E9%98%85"
   },
   {
-    "Name": "🙂刷新失败请到官网重新导入(需重登账号)",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "🙂刷新失败请到官网重新导入(需重登账号)",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%99%82%E5%88%B7%E6%96%B0%E5%A4%B1%E8%B4%A5%E8%AF%B7%E5%88%B0%E5%AE%98%E7%BD%91%E9%87%8D%E6%96%B0%E5%AF%BC%E5%85%A5%28%E9%9C%80%E9%87%8D%E7%99%BB%E8%B4%A6%E5%8F%B7%29"
   },
   {
-    "Name": "🇭🇰 香港1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "🇭🇰 香港1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AD%F0%9F%87%B0%20%E9%A6%99%E6%B8%AF1-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇭🇰 香港2-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "🇭🇰 香港2-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AD%F0%9F%87%B0%20%E9%A6%99%E6%B8%AF2-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇭🇰 香港3-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "🇭🇰 香港3-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AD%F0%9F%87%B0%20%E9%A6%99%E6%B8%AF3-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇭🇰 香港3-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 20745,
-    "Config": ""
+    "name": "🇭🇰 香港3-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 20745,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:20745?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AD%F0%9F%87%B0%20%E9%A6%99%E6%B8%AF3-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇭🇰 香港家宽1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 56225,
-    "Config": ""
+    "name": "🇭🇰 香港家宽1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 56225,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:56225?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AD%F0%9F%87%B0%20%E9%A6%99%E6%B8%AF%E5%AE%B6%E5%AE%BD1-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇭🇰 香港家宽1-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 56225,
-    "Config": ""
+    "name": "🇭🇰 香港家宽1-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 56225,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:56225?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AD%F0%9F%87%B0%20%E9%A6%99%E6%B8%AF%E5%AE%B6%E5%AE%BD1-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇭🇰 香港家宽1-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 56225,
-    "Config": ""
+    "name": "🇭🇰 香港家宽1-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 56225,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:56225?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AD%F0%9F%87%B0%20%E9%A6%99%E6%B8%AF%E5%AE%B6%E5%AE%BD1-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇭🇰 香港家宽1-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 56225,
-    "Config": ""
+    "name": "🇭🇰 香港家宽1-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 56225,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:56225?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AD%F0%9F%87%B0%20%E9%A6%99%E6%B8%AF%E5%AE%B6%E5%AE%BD1-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇨🇳 台湾1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 53515,
-    "Config": ""
+    "name": "🇨🇳 台湾1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 53515,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:53515?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A8%F0%9F%87%B3%20%E5%8F%B0%E6%B9%BE1-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇨🇳 台湾2-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 53515,
-    "Config": ""
+    "name": "🇨🇳 台湾2-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 53515,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:53515?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A8%F0%9F%87%B3%20%E5%8F%B0%E6%B9%BE2-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇨🇳 台湾2-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 53515,
-    "Config": ""
+    "name": "🇨🇳 台湾2-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 53515,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:53515?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A8%F0%9F%87%B3%20%E5%8F%B0%E6%B9%BE2-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇨🇳 台湾2-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 53515,
-    "Config": ""
+    "name": "🇨🇳 台湾2-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 53515,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:53515?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A8%F0%9F%87%B3%20%E5%8F%B0%E6%B9%BE2-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇨🇳 台湾家宽1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 33369,
-    "Config": ""
+    "name": "🇨🇳 台湾家宽1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 33369,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:33369?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A8%F0%9F%87%B3%20%E5%8F%B0%E6%B9%BE%E5%AE%B6%E5%AE%BD1-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇨🇳 台湾家宽2-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 33369,
-    "Config": ""
+    "name": "🇨🇳 台湾家宽2-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 33369,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:33369?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A8%F0%9F%87%B3%20%E5%8F%B0%E6%B9%BE%E5%AE%B6%E5%AE%BD2-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇨🇳 台湾家宽2-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 33369,
-    "Config": ""
+    "name": "🇨🇳 台湾家宽2-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 33369,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:33369?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A8%F0%9F%87%B3%20%E5%8F%B0%E6%B9%BE%E5%AE%B6%E5%AE%BD2-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇨🇳 台湾家宽2-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 33369,
-    "Config": ""
+    "name": "🇨🇳 台湾家宽2-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 33369,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:33369?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A8%F0%9F%87%B3%20%E5%8F%B0%E6%B9%BE%E5%AE%B6%E5%AE%BD2-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇸🇬 新加坡1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 25507,
-    "Config": ""
+    "name": "🇸🇬 新加坡1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 25507,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:25507?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%B8%F0%9F%87%AC%20%E6%96%B0%E5%8A%A0%E5%9D%A11-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇸🇬 新加坡2-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 25507,
-    "Config": ""
+    "name": "🇸🇬 新加坡2-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 25507,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:25507?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%B8%F0%9F%87%AC%20%E6%96%B0%E5%8A%A0%E5%9D%A12-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇸🇬 新加坡3-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 25507,
-    "Config": ""
+    "name": "🇸🇬 新加坡3-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 25507,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:25507?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%B8%F0%9F%87%AC%20%E6%96%B0%E5%8A%A0%E5%9D%A13-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇸🇬 新加坡3-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 25507,
-    "Config": ""
+    "name": "🇸🇬 新加坡3-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 25507,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:25507?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%B8%F0%9F%87%AC%20%E6%96%B0%E5%8A%A0%E5%9D%A13-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇯🇵 日本家宽1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 23199,
-    "Config": ""
+    "name": "🇯🇵 日本家宽1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 23199,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:23199?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC%E5%AE%B6%E5%AE%BD1-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇯🇵 日本家宽1-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 23199,
-    "Config": ""
+    "name": "🇯🇵 日本家宽1-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 23199,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:23199?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC%E5%AE%B6%E5%AE%BD1-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇯🇵 日本家宽1-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 23199,
-    "Config": ""
+    "name": "🇯🇵 日本家宽1-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 23199,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:23199?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC%E5%AE%B6%E5%AE%BD1-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇯🇵 日本家宽1-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 23199,
-    "Config": ""
+    "name": "🇯🇵 日本家宽1-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 23199,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:23199?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC%E5%AE%B6%E5%AE%BD1-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇯🇵 日本家宽2-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 15853,
-    "Config": ""
+    "name": "🇯🇵 日本家宽2-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 15853,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:15853?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC%E5%AE%B6%E5%AE%BD2-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇯🇵 日本家宽2-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 15853,
-    "Config": ""
+    "name": "🇯🇵 日本家宽2-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 15853,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:15853?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC%E5%AE%B6%E5%AE%BD2-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇯🇵 日本家宽2-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 15853,
-    "Config": ""
+    "name": "🇯🇵 日本家宽2-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 15853,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:15853?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC%E5%AE%B6%E5%AE%BD2-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇯🇵 日本家宽2-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 15853,
-    "Config": ""
+    "name": "🇯🇵 日本家宽2-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 15853,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:15853?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC%E5%AE%B6%E5%AE%BD2-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇯🇵 日本1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 59528,
-    "Config": ""
+    "name": "🇯🇵 日本1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 59528,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:59528?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC1-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇯🇵 日本2-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 59528,
-    "Config": ""
+    "name": "🇯🇵 日本2-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 59528,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:59528?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC2-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇯🇵 日本3-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 59528,
-    "Config": ""
+    "name": "🇯🇵 日本3-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 59528,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:59528?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC3-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇯🇵 日本3-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 59528,
-    "Config": ""
+    "name": "🇯🇵 日本3-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 59528,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:59528?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AF%F0%9F%87%B5%20%E6%97%A5%E6%9C%AC3-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇺🇸 美国家宽1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 26538,
-    "Config": ""
+    "name": "🇺🇸 美国家宽1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 26538,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:26538?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD%E5%AE%B6%E5%AE%BD1-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇺🇸 美国家宽2-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 26538,
-    "Config": ""
+    "name": "🇺🇸 美国家宽2-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 26538,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:26538?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD%E5%AE%B6%E5%AE%BD2-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇺🇸 美国家宽3-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 26538,
-    "Config": ""
+    "name": "🇺🇸 美国家宽3-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 26538,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:26538?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD%E5%AE%B6%E5%AE%BD3-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇺🇸 美国家宽3-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 26538,
-    "Config": ""
+    "name": "🇺🇸 美国家宽3-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 26538,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:26538?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD%E5%AE%B6%E5%AE%BD3-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇺🇸 美国1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 56582,
-    "Config": ""
+    "name": "🇺🇸 美国1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 56582,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:56582?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD1-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇺🇸 美国2-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 56582,
-    "Config": ""
+    "name": "🇺🇸 美国2-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 56582,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:56582?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD2-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇺🇸 美国1-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 56582,
-    "Config": ""
+    "name": "🇺🇸 美国1-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 56582,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:56582?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD1-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇺🇸 美国1-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 56582,
-    "Config": ""
+    "name": "🇺🇸 美国1-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 56582,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:56582?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%BA%F0%9F%87%B8%20%E7%BE%8E%E5%9B%BD1-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇩🇪 德国1-负载IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 24226,
-    "Config": ""
+    "name": "🇩🇪 德国1-负载IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 24226,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:24226?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A9%F0%9F%87%AA%20%E5%BE%B7%E5%9B%BD1-%E8%B4%9F%E8%BD%BDIEPL"
   },
   {
-    "Name": "🇩🇪 德国2-联通IEPL",
-    "Type": "trojan",
-    "Server": "lt2ho2st.luckycandy168.vip",
-    "ServerPort": 24226,
-    "Config": ""
+    "name": "🇩🇪 德国2-联通IEPL",
+    "type": "trojan",
+    "server": "lt2ho2st.luckycandy168.vip",
+    "serverPort": 24226,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@lt2ho2st.luckycandy168.vip:24226?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A9%F0%9F%87%AA%20%E5%BE%B7%E5%9B%BD2-%E8%81%94%E9%80%9AIEPL"
   },
   {
-    "Name": "🇩🇪 德国3-移动IEPL",
-    "Type": "trojan",
-    "Server": "yd2ho2st.luckycandy168.vip",
-    "ServerPort": 24226,
-    "Config": ""
+    "name": "🇩🇪 德国3-移动IEPL",
+    "type": "trojan",
+    "server": "yd2ho2st.luckycandy168.vip",
+    "serverPort": 24226,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@yd2ho2st.luckycandy168.vip:24226?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A9%F0%9F%87%AA%20%E5%BE%B7%E5%9B%BD3-%E7%A7%BB%E5%8A%A8IEPL"
   },
   {
-    "Name": "🇩🇪 德国3-电信IEPL",
-    "Type": "trojan",
-    "Server": "dx2ho2st.luckycandy168.vip",
-    "ServerPort": 24226,
-    "Config": ""
+    "name": "🇩🇪 德国3-电信IEPL",
+    "type": "trojan",
+    "server": "dx2ho2st.luckycandy168.vip",
+    "serverPort": 24226,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@dx2ho2st.luckycandy168.vip:24226?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A9%F0%9F%87%AA%20%E5%BE%B7%E5%9B%BD3-%E7%94%B5%E4%BF%A1IEPL"
   },
   {
-    "Name": "🇰🇷 韩国-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 52270,
-    "Config": ""
+    "name": "🇰🇷 韩国-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 52270,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:52270?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%B0%F0%9F%87%B7%20%E9%9F%A9%E5%9B%BD-IEPL"
   },
   {
-    "Name": "🇹🇭 泰国-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 29743,
-    "Config": ""
+    "name": "🇹🇭 泰国-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 29743,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:29743?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%B9%F0%9F%87%AD%20%E6%B3%B0%E5%9B%BD-IEPL"
   },
   {
-    "Name": "🇦🇷 阿根廷-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 21625,
-    "Config": ""
+    "name": "🇦🇷 阿根廷-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 21625,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:21625?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A6%F0%9F%87%B7%20%E9%98%BF%E6%A0%B9%E5%BB%B7-IEPL"
   },
   {
-    "Name": "🇹🇷 土耳其-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 24737,
-    "Config": ""
+    "name": "🇹🇷 土耳其-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 24737,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:24737?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%B9%F0%9F%87%B7%20%E5%9C%9F%E8%80%B3%E5%85%B6-IEPL"
   },
   {
-    "Name": "🇬🇧 英国-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 14863,
-    "Config": ""
+    "name": "🇬🇧 英国-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 14863,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:14863?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AC%F0%9F%87%A7%20%E8%8B%B1%E5%9B%BD-IEPL"
   },
   {
-    "Name": "🇬🇧 英国家宽-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 15056,
-    "Config": ""
+    "name": "🇬🇧 英国家宽-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 15056,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:15056?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AC%F0%9F%87%A7%20%E8%8B%B1%E5%9B%BD%E5%AE%B6%E5%AE%BD-IEPL"
   },
   {
-    "Name": "🇫🇷 法国-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 12408,
-    "Config": ""
+    "name": "🇫🇷 法国-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 12408,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:12408?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%AB%F0%9F%87%B7%20%E6%B3%95%E5%9B%BD-IEPL"
   },
   {
-    "Name": "🇻🇳 越南-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 26805,
-    "Config": ""
+    "name": "🇻🇳 越南-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 26805,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:26805?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%BB%F0%9F%87%B3%20%E8%B6%8A%E5%8D%97-IEPL"
   },
   {
-    "Name": "🇷🇺 俄罗斯-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 14269,
-    "Config": ""
+    "name": "🇷🇺 俄罗斯-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 14269,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:14269?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%B7%F0%9F%87%BA%20%E4%BF%84%E7%BD%97%E6%96%AF-IEPL"
   },
   {
-    "Name": "🇦🇪 迪拜-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 58492,
-    "Config": ""
+    "name": "🇦🇪 迪拜-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 58492,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:58492?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%A6%F0%9F%87%AA%20%E8%BF%AA%E6%8B%9C-IEPL"
   },
   {
-    "Name": "🇲🇽 墨西哥-IEPL",
-    "Type": "trojan",
-    "Server": "ie2pl2zong.luckycandy168.vip",
-    "ServerPort": 53994,
-    "Config": ""
+    "name": "🇲🇽 墨西哥-IEPL",
+    "type": "trojan",
+    "server": "ie2pl2zong.luckycandy168.vip",
+    "serverPort": 53994,
+    "config": "{\"password\":\"f3905489-5b47-4b2a-a36b-6c3423f2a8b1\",\"tls\":{\"enabled\":true,\"server_name\":\"v1-dy.ixigua.com\",\"insecure\":true},\"server_name\":\"v1-dy.ixigua.com\"}",
+    "shareUrl": "trojan://f3905489-5b47-4b2a-a36b-6c3423f2a8b1@ie2pl2zong.luckycandy168.vip:53994?allowInsecure=1\u0026peer=v1-dy.ixigua.com\u0026sni=v1-dy.ixigua.com#%F0%9F%87%B2%F0%9F%87%BD%20%E5%A2%A8%E8%A5%BF%E5%93%A5-IEPL"
   }
 ]

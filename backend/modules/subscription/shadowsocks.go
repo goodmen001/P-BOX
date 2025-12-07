@@ -7,12 +7,13 @@ import (
 )
 
 // ShadowsocksConfig Shadowsocks配置结构
+// 注意：字段名需要与 Mihomo 配置格式一致
 type ShadowsocksConfig struct {
-	Method     string `json:"method"`
+	Cipher     string `json:"cipher"` // Mihomo 使用 cipher 而不是 method
 	Password   string `json:"password"`
 	Plugin     string `json:"plugin,omitempty"`
-	PluginOpts string `json:"plugin_opts,omitempty"`
-	UDPOverTCP bool   `json:"udp_over_tcp,omitempty"`
+	PluginOpts string `json:"plugin-opts,omitempty"` // Mihomo 使用连字符
+	UDP        bool   `json:"udp,omitempty"`
 }
 
 // ParseShadowsocksURL 解析Shadowsocks链接
@@ -104,12 +105,13 @@ func ParseShadowsocksURL(ssURL string) (*ProxyNode, error) {
 	// 解析查询参数（插件）
 	params := ParseQueryParams(queryString)
 
-	// 构建配置
+	// 构建配置 - 使用 Mihomo 要求的字段名
 	config := ShadowsocksConfig{
-		Method:     method,
+		Cipher:     method, // SS URL 中叫 method，Mihomo 配置中叫 cipher
 		Password:   password,
 		Plugin:     params["plugin"],
 		PluginOpts: params["plugin-opts"],
+		UDP:        true, // 默认启用 UDP
 	}
 
 	// 转换为JSON字符串
@@ -120,7 +122,7 @@ func ParseShadowsocksURL(ssURL string) (*ProxyNode, error) {
 
 	node := &ProxyNode{
 		Name:       name,
-		Type:       "shadowsocks",
+		Type:       "ss", // Mihomo 使用 "ss" 作为类型标识
 		Server:     server,
 		ServerPort: port,
 		Config:     configJSON,

@@ -1,6 +1,6 @@
-import client from './client'
+import api from './client'
 
-// 透明代理模式类型
+// Transparent proxy mode types
 export type TransparentMode = 'off' | 'tun' | 'tproxy' | 'redirect'
 
 export interface ProxyStatus {
@@ -28,16 +28,18 @@ export interface ProxyConfig {
   tunEnabled: boolean
   tunStack: string
   transparentMode: TransparentMode
+  autoStart: boolean
+  autoStartDelay: number
 }
 
 export const proxyApi = {
-  getStatus: () => client.get<ProxyStatus>('/proxy/status'),
-  start: () => client.post('/proxy/start'),
-  stop: () => client.post('/proxy/stop'),
-  restart: () => client.post('/proxy/restart'),
-  setMode: (mode: string) => client.put('/proxy/mode', { mode }),
-  setTunMode: (enabled: boolean) => client.put('/proxy/tun', { enabled }),
-  setTransparentMode: (mode: TransparentMode) => client.put('/proxy/transparent', { mode }),
-  getConfig: () => client.get<ProxyConfig>('/proxy/config'),
-  updateConfig: (config: ProxyConfig) => client.put('/proxy/config', config),
+  getStatus: () => api.get<ProxyStatus>('/proxy/status'),
+  start: () => api.post('/proxy/start'),
+  stop: () => api.post('/proxy/stop'),
+  restart: () => api.post('/proxy/restart'),
+  setMode: (mode: string) => api.put('/proxy/mode', { mode }),
+  setTunMode: (enabled: boolean) => api.put('/proxy/tun', { enabled }),
+  setTransparentMode: (mode: TransparentMode) => api.put('/proxy/transparent', { mode }),
+  getConfig: () => api.get<ProxyConfig>('/proxy/config'),
+  updateConfig: (config: ProxyConfig) => api.put('/proxy/config', config),
 }

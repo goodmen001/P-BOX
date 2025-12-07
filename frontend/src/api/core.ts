@@ -26,36 +26,47 @@ export interface DownloadProgress {
 }
 
 export const coreApi = {
-  // 获取核心状态
+  // Get core status
   getStatus: async (): Promise<CoreStatus> => {
     const res = await client.get('/core/status')
     return res.data.data
   },
 
-  // 获取最新版本
+  // Get latest versions
   getLatestVersions: async (): Promise<Record<string, string>> => {
     const res = await client.get('/core/versions')
     return res.data.data
   },
 
-  // 切换核心
+  // Switch core
   switchCore: async (coreType: string): Promise<void> => {
     await client.post('/core/switch', { coreType })
   },
 
-  // 下载核心
+  // Download core
   downloadCore: async (coreType: string): Promise<void> => {
     await client.post(`/core/download/${coreType}`)
   },
 
-  // 获取下载进度
+  // Get download progress
   getDownloadProgress: async (coreType: string): Promise<DownloadProgress> => {
     const res = await client.get(`/core/download/${coreType}/progress`)
     return res.data.data
   },
+
+  // Refresh versions (手动刷新版本信息)
+  refreshVersions: async (): Promise<Record<string, string>> => {
+    const res = await client.post('/core/versions/refresh')
+    return res.data.data
+  },
+
+  // Get platform info
+  getPlatformInfo: async (): Promise<{ os: string; arch: string }> => {
+    const res = await client.get('/core/platform')
+    return res.data.data
+  },
 }
 
-// 从后端获取最新版本
 export async function fetchLatestVersions(): Promise<{ mihomo: string; singbox: string }> {
   const versions = await coreApi.getLatestVersions()
   return {

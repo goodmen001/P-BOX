@@ -2,14 +2,15 @@
   {
     "id": "913cf7ae-53b3-44fd-ad48-22477315a521",
     "name": "糖果",
-    "url": "https://114.132.219.239:9888/tgyunsub?token=09dbe267a5fe9545974edd345057697d",
-    "nodeCount": 61,
+    "url": "https://114.132.219.239:9888/tgyunsub?token=9e9e4afdaf577f696fa1e2149d39295c",
+    "nodeCount": 0,
+    "filteredNodeCount": 55,
     "traffic": {
       "upload": 1799739736,
       "download": 21910600395,
       "total": 214748364800
     },
-    "updatedAt": "2025-12-05T17:08:33.012951+08:00",
+    "updatedAt": "2025-12-07T15:02:07.686772+08:00",
     "createdAt": "2025-12-05T17:08:32.557339+08:00",
     "autoUpdate": true,
     "updateInterval": 86400,
@@ -19,7 +20,7 @@
       "QQ群",
       "官网",
       "到期",
-      "节点",
+      "公告",
       "更新",
       "距离",
       "套餐",
@@ -29,12 +30,11 @@
       "倍率",
       "异常",
       "QQ",
-      "官方",
-      "公告"
+      "官方"
     ],
     "filterMode": "exclude",
     "customHeaders": {
-      "User-Agent": "clash.meta"
+      "User-Agent": "v2rayN"
     }
   }
 ]

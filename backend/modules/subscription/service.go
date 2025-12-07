@@ -34,6 +34,9 @@ type Subscription struct {
 	FilterMode     string   `json:"filterMode"`               // include: 包含, exclude: 排除
 	// 自定义请求头
 	CustomHeaders map[string]string `json:"customHeaders,omitempty"`
+	// 更新状态
+	LastUpdateStatus string `json:"lastUpdateStatus,omitempty"` // success, failed
+	LastError        string `json:"lastError,omitempty"`        // 最后一次错误信息
 }
 
 type Traffic struct {
@@ -357,9 +360,17 @@ func (s *Service) UpdateAll() error {
 }
 
 func (s *Service) updateSubscription(sub *Subscription) error {
+	// 辅助函数：设置失败状态
+	setFailed := func(errMsg string) {
+		sub.LastUpdateStatus = "failed"
+		sub.LastError = errMsg
+		sub.UpdatedAt = time.Now()
+	}
+
 	// 创建请求
 	req, err := http.NewRequest("GET", sub.URL, nil)
 	if err != nil {
+		setFailed(fmt.Sprintf("创建请求失败: %v", err))
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
@@ -373,6 +384,7 @@ func (s *Service) updateSubscription(sub *Subscription) error {
 	client := &http.Client{Timeout: 30 * time.Second}
 	resp, err := client.Do(req)
 	if err != nil {
+		setFailed(fmt.Sprintf("请求失败: %v", err))
 		return fmt.Errorf("failed to fetch subscription: %w", err)
 	}
 	defer resp.Body.Close()
@@ -384,7 +396,14 @@ func (s *Service) updateSubscription(sub *Subscription) error {
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
+		setFailed(fmt.Sprintf("读取响应失败: %v", err))
 		return fmt.Errorf("failed to read response: %w", err)
+	}
+
+	// 检查 HTTP 状态码
+	if resp.StatusCode != http.StatusOK {
+		setFailed(fmt.Sprintf("HTTP 错误: %d", resp.StatusCode))
+		return fmt.Errorf("HTTP error: %d", resp.StatusCode)
 	}
 
 	// 尝试解析订阅内容
@@ -455,6 +474,16 @@ func (s *Service) updateSubscription(sub *Subscription) error {
 
 	sub.NodeCount = len(nodes)
 	sub.UpdatedAt = time.Now()
+
+	// 检查是否解析到节点
+	if len(nodes) == 0 {
+		setFailed("未解析到任何节点")
+		return fmt.Errorf("no nodes found")
+	}
+
+	// 更新成功
+	sub.LastUpdateStatus = "success"
+	sub.LastError = ""
 
 	// 保存订阅内容和节点列表
 	configPath := filepath.Join(s.dataDir, "configs", sub.ID+".yaml")

@@ -7,10 +7,10 @@
   "ipv6": false,
   "mode": "rule",
   "logLevel": "info",
-  "externalController": "0.0.0.0:9090",
-  "tunEnabled": true,
+  "externalController": "127.0.0.1:9090",
+  "tunEnabled": false,
   "tunStack": "mixed",
-  "transparentMode": "tun",
+  "transparentMode": "off",
   "autoStart": false,
   "autoStartDelay": 15
 }

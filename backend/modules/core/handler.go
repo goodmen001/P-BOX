@@ -11,14 +11,19 @@ type Handler struct {
 }
 
 func NewHandler(dataDir string) *Handler {
-	return &Handler{
+	h := &Handler{
 		service: NewService(dataDir),
 	}
+	// 启动后延迟 5 秒自动检测版本和下载核心
+	h.service.Initialize(5)
+	return h
 }
 
 func (h *Handler) RegisterRoutes(r *gin.RouterGroup) {
 	r.GET("/status", h.GetStatus)
 	r.GET("/versions", h.GetVersions)
+	r.POST("/versions/refresh", h.RefreshVersions)
+	r.GET("/platform", h.GetPlatformInfo)
 	r.POST("/switch", h.SwitchCore)
 	r.POST("/download/:core", h.DownloadCore)
 	r.GET("/download/:core/progress", h.GetDownloadProgress)
@@ -95,5 +100,34 @@ func (h *Handler) GetDownloadProgress(c *gin.Context) {
 		"code":    0,
 		"message": "success",
 		"data":    progress,
+	})
+}
+
+// RefreshVersions 手动刷新版本信息
+func (h *Handler) RefreshVersions(c *gin.Context) {
+	versions, err := h.service.RefreshVersions()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    1,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    0,
+		"message": "版本信息已刷新并保存",
+		"data":    versions,
+	})
+}
+
+// GetPlatformInfo 获取平台信息
+func (h *Handler) GetPlatformInfo(c *gin.Context) {
+	info := h.service.GetPlatformInfo()
+
+	c.JSON(http.StatusOK, gin.H{
+		"code":    0,
+		"message": "success",
+		"data":    info,
 	})
 }

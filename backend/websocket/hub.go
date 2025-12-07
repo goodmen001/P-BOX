@@ -56,14 +56,14 @@ func (h *Hub) proxyMihomoWebSocket(c *gin.Context, path string) {
 	}
 	defer clientConn.Close()
 
-	// 连接到 Mihomo WebSocket (如果有 token 需要带上)
+	// 连接到 Mihomo WebSocket
 	// Mihomo API 默认监听 127.0.0.1:9090
 	mihomoURL := "ws://127.0.0.1:9090" + path
 
-	// 从请求中获取 token 参数（如果有）
-	token := c.Query("token")
-	if token != "" {
-		mihomoURL += "?token=" + token
+	// 转发所有查询参数 (token, level 等)
+	queryString := c.Request.URL.RawQuery
+	if queryString != "" {
+		mihomoURL += "?" + queryString
 	}
 
 	log.Printf("[WebSocket] 连接 Mihomo: %s", mihomoURL)

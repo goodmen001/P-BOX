@@ -1,47 +1,92 @@
 mixed-port: 7890
-allow-lan: false
+allow-lan: true
 mode: rule
 log-level: info
 ipv6: false
-external-controller: 0.0.0.0:9090
+external-controller: 127.0.0.1:9090
 unified-delay: true
 tcp-concurrent: true
-find-process-mode: strict
+find-process-mode: "off"
 global-client-fingerprint: chrome
 geodata-mode: true
 geodata-loader: standard
 geo-auto-update: true
 geo-update-interval: 24
 geox-url:
-    geoip: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat
-    geosite: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat
-    mmdb: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb
-    asn: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/GeoLite2-ASN.mmdb
+    geoip: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/geoip.dat
+    geosite: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/geosite.dat
+    mmdb: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/country.mmdb
+    asn: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/GeoLite2-ASN.mmdb
+keep-alive-interval: 30
+keep-alive-idle: 60
 profile:
     store-selected: true
     store-fake-ip: true
 dns:
     enable: true
     prefer-h3: true
+    cache-algorithm: arc
     listen: 0.0.0.0:1053
     ipv6: false
+    use-hosts: true
     enhanced-mode: fake-ip
     fake-ip-range: 198.18.0.1/16
     fake-ip-filter:
-        - '*'
-        - +.lan
-        - +.local
-        - +.localhost
+        - geosite:cn
+        - geosite:private
+        - '*.lan'
+        - '*.local'
+        - '*.localhost'
+        - '*.localdomain'
+        - '*.home.arpa'
         - +.msftconnecttest.com
         - +.msftncsi.com
+        - connectivitycheck.gstatic.com
+        - captive.apple.com
+        - wifi.vivo.com.cn
+        - connect.rom.miui.com
+        - time.*.com
+        - time.*.gov
+        - time.*.apple.com
+        - time.*.edu.cn
+        - ntp.*.com
+        - pool.ntp.org
+        - stun.*.*
+        - stun.*.*.*
+        - +.stun.playstation.net
+        - +.stun.xbox.com
+        - +.stun.l.google.com
+        - +._tcp.*
+        - +._udp.*
         - localhost.ptlogin2.qq.com
         - +.market.xiaomi.com
+        - +.qq.com
+        - +.tencent.com
+        - +.weixin.qq.com
+        - +.alipay.com
+        - +.taobao.com
+        - +.tmall.com
+        - +.jd.com
+        - +.baidu.com
+        - +.bilibili.com
+        - +.163.com
+        - +.126.com
+    respect-rules: true
     default-nameserver:
-        - tls://223.5.5.5
-        - tls://223.6.6.6
-    nameserver:
-        - https://dns.alidns.com/dns-query
+        - 223.5.5.5
+        - 119.29.29.29
+    proxy-server-nameserver:
+        - 223.5.5.5
+        - 119.29.29.29
         - https://doh.pub/dns-query
+    direct-nameserver:
+        - 223.5.5.5
+        - 119.29.29.29
+        - https://doh.pub/dns-query
+    nameserver:
+        - https://dns.google/dns-query
+        - https://cloudflare-dns.com/dns-query
+        - 1.1.1.1
     fallback:
         - https://dns.google/dns-query
         - https://cloudflare-dns.com/dns-query
@@ -51,17 +96,27 @@ dns:
         geoip-code: CN
         ipcidr:
             - 240.0.0.0/4
+            - 0.0.0.0/32
+            - 127.0.0.1/32
         domain:
             - +.google.com
             - +.facebook.com
             - +.youtube.com
             - +.twitter.com
+            - +.googleapis.com
+            - +.gstatic.com
+            - +.github.com
+            - +.githubusercontent.com
     nameserver-policy:
-        rule-set:cn-domain,private-domain:
-            - https://dns.alidns.com/dns-query
+        geosite:cn:
             - https://doh.pub/dns-query
+            - https://dns.alidns.com/dns-query
+        geosite:private:
+            - https://doh.pub/dns-query
+            - https://dns.alidns.com/dns-query
 sniffer:
     enable: true
+    force-dns-mapping: true
     parse-pure-ip: true
     override-destination: true
     sniff:
@@ -77,798 +132,1021 @@ sniffer:
             ports:
                 - 443
                 - 8443
+    skip-domain:
+        - +.push.apple.com
 proxies:
-    - name: "\U0001F1ED\U0001F1F0 香港1-负载IEPL"
-      port: 0
+    - client-fingerprint: chrome
+      name: "🇭🇰 香港1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 20745
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1ED\U0001F1F0 香港2-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇭🇰 香港2-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 20745
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1ED\U0001F1F0 香港3-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇭🇰 香港3-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 20745
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1ED\U0001F1F0 香港3-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇭🇰 香港3-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 20745
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1ED\U0001F1F0 香港家宽1-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇭🇰 香港家宽1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 56225
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1ED\U0001F1F0 香港家宽1-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇭🇰 香港家宽1-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 56225
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1ED\U0001F1F0 香港家宽1-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇭🇰 香港家宽1-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 56225
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1ED\U0001F1F0 香港家宽1-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇭🇰 香港家宽1-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 56225
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E8\U0001F1F3 台湾1-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇨🇳 台湾1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 53515
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E8\U0001F1F3 台湾2-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇨🇳 台湾2-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 53515
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E8\U0001F1F3 台湾2-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇨🇳 台湾2-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 53515
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E8\U0001F1F3 台湾2-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇨🇳 台湾2-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 53515
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E8\U0001F1F3 台湾家宽1-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇨🇳 台湾家宽1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 33369
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E8\U0001F1F3 台湾家宽2-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇨🇳 台湾家宽2-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 33369
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E8\U0001F1F3 台湾家宽2-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇨🇳 台湾家宽2-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 33369
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E8\U0001F1F3 台湾家宽2-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇨🇳 台湾家宽2-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 33369
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F8\U0001F1EC 新加坡1-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇸🇬 新加坡1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 25507
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F8\U0001F1EC 新加坡2-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇸🇬 新加坡2-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 25507
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F8\U0001F1EC 新加坡3-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇸🇬 新加坡3-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 25507
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F8\U0001F1EC 新加坡3-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇸🇬 新加坡3-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 25507
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本家宽1-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本家宽1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 23199
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本家宽1-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本家宽1-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 23199
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本家宽1-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本家宽1-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 23199
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本家宽1-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本家宽1-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 23199
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本家宽2-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本家宽2-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 15853
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本家宽2-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本家宽2-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 15853
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本家宽2-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本家宽2-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 15853
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本家宽2-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本家宽2-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 15853
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本1-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 59528
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本2-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本2-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 59528
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本3-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本3-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 59528
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EF\U0001F1F5 日本3-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇯🇵 日本3-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 59528
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1FA\U0001F1F8 美国家宽1-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇺🇸 美国家宽1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 26538
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1FA\U0001F1F8 美国家宽2-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇺🇸 美国家宽2-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 26538
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1FA\U0001F1F8 美国家宽3-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇺🇸 美国家宽3-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 26538
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1FA\U0001F1F8 美国家宽3-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇺🇸 美国家宽3-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 26538
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1FA\U0001F1F8 美国1-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇺🇸 美国1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 56582
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1FA\U0001F1F8 美国2-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇺🇸 美国2-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 56582
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1FA\U0001F1F8 美国1-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇺🇸 美国1-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 56582
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1FA\U0001F1F8 美国1-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇺🇸 美国1-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 56582
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E9\U0001F1EA 德国1-负载IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇩🇪 德国1-负载IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 24226
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E9\U0001F1EA 德国2-联通IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇩🇪 德国2-联通IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 24226
       server: lt2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E9\U0001F1EA 德国3-移动IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇩🇪 德国3-移动IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 24226
       server: yd2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E9\U0001F1EA 德国3-电信IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇩🇪 德国3-电信IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 24226
       server: dx2ho2st.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F0\U0001F1F7 韩国-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇰🇷 韩国-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 52270
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F9\U0001F1ED 泰国-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇹🇭 泰国-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 29743
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E6\U0001F1F7 阿根廷-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇦🇷 阿根廷-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 21625
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F9\U0001F1F7 土耳其-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇹🇷 土耳其-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 24737
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EC\U0001F1E7 英国-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇬🇧 英国-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 14863
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EC\U0001F1E7 英国家宽-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇬🇧 英国家宽-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 15056
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1EB\U0001F1F7 法国-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇫🇷 法国-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 12408
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1FB\U0001F1F3 越南-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇻🇳 越南-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 26805
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F7\U0001F1FA 俄罗斯-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇷🇺 俄罗斯-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 14269
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1E6\U0001F1EA 迪拜-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇦🇪 迪拜-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 58492
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F2\U0001F1FD 墨西哥-IEPL"
-      port: 0
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇲🇽 墨西哥-IEPL"
+      password: f3905489-5b47-4b2a-a36b-6c3423f2a8b1
+      port: 53994
       server: ie2pl2zong.luckycandy168.vip
+      servername: v1-dy.ixigua.com
+      skip-cert-verify: true
       type: trojan
-    - name: "\U0001F1F8\U0001F1EC 新加坡-200m-lkh1r7yu3"
-      network: tcp
-      packet_encoding: xudp
-      reality:
-        enabled: true
-        public_key: nKC3Dc6fn5oICiSwNMVnSuVDcpBTB22_QkTh1iJAaQw
-        short_id: ab1962d1fa4d19
-        spider_x: /
-      server_name: yahoo.com
-      tls:
-        enabled: true
-        server_name: yahoo.com
-        utls:
-            enabled: true
-            fingerprint: chrome
+      udp: true
+    - client-fingerprint: chrome
+      name: "🇸🇬 新加坡-200m-lkh1r7yu3"
+      port: 18796
+      reality-opts:
+        public-key: nKC3Dc6fn5oICiSwNMVnSuVDcpBTB22_QkTh1iJAaQw
+        short-id: ab1962d1fa4d19
+      server: sv1.hunas.cn
+      servername: yahoo.com
+      skip-cert-verify: true
+      tls: true
+      type: vless
+      udp: true
       uuid: c4953caa-1976-4ac5-bb08-ab8a07417d73
 proxy-groups:
-    - name: "\U0001F680 节点选择"
-      type: select
-      proxies:
-        - ♻️ 自动选择
-        - DIRECT
-        - "\U0001F1ED\U0001F1F0 香港1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港2-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-电信IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-电信IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡1-负载IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡2-联通IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-移动IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-电信IEPL"
-        - "\U0001F1E9\U0001F1EA 德国1-负载IEPL"
-        - "\U0001F1E9\U0001F1EA 德国2-联通IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-移动IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-电信IEPL"
-        - "\U0001F1F0\U0001F1F7 韩国-IEPL"
-        - "\U0001F1F9\U0001F1ED 泰国-IEPL"
-        - "\U0001F1E6\U0001F1F7 阿根廷-IEPL"
-        - "\U0001F1F9\U0001F1F7 土耳其-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国家宽-IEPL"
-        - "\U0001F1EB\U0001F1F7 法国-IEPL"
-        - "\U0001F1FB\U0001F1F3 越南-IEPL"
-        - "\U0001F1F7\U0001F1FA 俄罗斯-IEPL"
-        - "\U0001F1E6\U0001F1EA 迪拜-IEPL"
-        - "\U0001F1F2\U0001F1FD 墨西哥-IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡-200m-lkh1r7yu3"
-    - name: ♻️ 自动选择
+    - name: 自动选择
       type: url-test
       proxies:
-        - "\U0001F1ED\U0001F1F0 香港1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港2-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-电信IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-电信IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡1-负载IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡2-联通IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-移动IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-电信IEPL"
-        - "\U0001F1E9\U0001F1EA 德国1-负载IEPL"
-        - "\U0001F1E9\U0001F1EA 德国2-联通IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-移动IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-电信IEPL"
-        - "\U0001F1F0\U0001F1F7 韩国-IEPL"
-        - "\U0001F1F9\U0001F1ED 泰国-IEPL"
-        - "\U0001F1E6\U0001F1F7 阿根廷-IEPL"
-        - "\U0001F1F9\U0001F1F7 土耳其-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国家宽-IEPL"
-        - "\U0001F1EB\U0001F1F7 法国-IEPL"
-        - "\U0001F1FB\U0001F1F3 越南-IEPL"
-        - "\U0001F1F7\U0001F1FA 俄罗斯-IEPL"
-        - "\U0001F1E6\U0001F1EA 迪拜-IEPL"
-        - "\U0001F1F2\U0001F1FD 墨西哥-IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡-200m-lkh1r7yu3"
-      url: http://www.gstatic.com/generate_204
+        - "🇭🇰 香港1-负载IEPL"
+        - "🇭🇰 香港2-联通IEPL"
+        - "🇭🇰 香港3-移动IEPL"
+        - "🇭🇰 香港3-电信IEPL"
+        - "🇭🇰 香港家宽1-负载IEPL"
+        - "🇭🇰 香港家宽1-联通IEPL"
+        - "🇭🇰 香港家宽1-移动IEPL"
+        - "🇭🇰 香港家宽1-电信IEPL"
+        - "🇨🇳 台湾1-负载IEPL"
+        - "🇨🇳 台湾2-联通IEPL"
+        - "🇨🇳 台湾2-移动IEPL"
+        - "🇨🇳 台湾2-电信IEPL"
+        - "🇨🇳 台湾家宽1-负载IEPL"
+        - "🇨🇳 台湾家宽2-联通IEPL"
+        - "🇨🇳 台湾家宽2-移动IEPL"
+        - "🇨🇳 台湾家宽2-电信IEPL"
+        - "🇸🇬 新加坡1-负载IEPL"
+        - "🇸🇬 新加坡2-联通IEPL"
+        - "🇸🇬 新加坡3-移动IEPL"
+        - "🇸🇬 新加坡3-电信IEPL"
+        - "🇯🇵 日本家宽1-负载IEPL"
+        - "🇯🇵 日本家宽1-移动IEPL"
+        - "🇯🇵 日本家宽1-联通IEPL"
+        - "🇯🇵 日本家宽1-电信IEPL"
+        - "🇯🇵 日本家宽2-负载IEPL"
+        - "🇯🇵 日本家宽2-联通IEPL"
+        - "🇯🇵 日本家宽2-移动IEPL"
+        - "🇯🇵 日本家宽2-电信IEPL"
+        - "🇯🇵 日本1-负载IEPL"
+        - "🇯🇵 日本2-联通IEPL"
+        - "🇯🇵 日本3-移动IEPL"
+        - "🇯🇵 日本3-电信IEPL"
+        - "🇺🇸 美国家宽1-负载IEPL"
+        - "🇺🇸 美国家宽2-联通IEPL"
+        - "🇺🇸 美国家宽3-移动IEPL"
+        - "🇺🇸 美国家宽3-电信IEPL"
+        - "🇺🇸 美国1-负载IEPL"
+        - "🇺🇸 美国2-联通IEPL"
+        - "🇺🇸 美国1-移动IEPL"
+        - "🇺🇸 美国1-电信IEPL"
+        - "🇩🇪 德国1-负载IEPL"
+        - "🇩🇪 德国2-联通IEPL"
+        - "🇩🇪 德国3-移动IEPL"
+        - "🇩🇪 德国3-电信IEPL"
+        - "🇰🇷 韩国-IEPL"
+        - "🇹🇭 泰国-IEPL"
+        - "🇦🇷 阿根廷-IEPL"
+        - "🇹🇷 土耳其-IEPL"
+        - "🇬🇧 英国-IEPL"
+        - "🇬🇧 英国家宽-IEPL"
+        - "🇫🇷 法国-IEPL"
+        - "🇻🇳 越南-IEPL"
+        - "🇷🇺 俄罗斯-IEPL"
+        - "🇦🇪 迪拜-IEPL"
+        - "🇲🇽 墨西哥-IEPL"
+        - "🇸🇬 新加坡-200m-lkh1r7yu3"
+      url: https://www.gstatic.com/generate_204
       interval: 300
-    - name: "\U0001F30D 国外媒体"
+    - name: 故障转移
+      type: fallback
+      proxies:
+        - 香港节点
+        - 台湾节点
+        - 日本节点
+        - 新加坡节点
+        - 美国节点
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    - name: 节点选择
       type: select
       proxies:
-        - "\U0001F680 节点选择"
-        - ♻️ 自动选择
+        - 自动选择
+        - 故障转移
+        - 香港节点
+        - 台湾节点
+        - 日本节点
+        - 新加坡节点
+        - 美国节点
+        - 其他节点
         - DIRECT
-        - "\U0001F1ED\U0001F1F0 香港1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港2-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-电信IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-电信IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡1-负载IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡2-联通IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-移动IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-电信IEPL"
-        - "\U0001F1E9\U0001F1EA 德国1-负载IEPL"
-        - "\U0001F1E9\U0001F1EA 德国2-联通IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-移动IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-电信IEPL"
-        - "\U0001F1F0\U0001F1F7 韩国-IEPL"
-        - "\U0001F1F9\U0001F1ED 泰国-IEPL"
-        - "\U0001F1E6\U0001F1F7 阿根廷-IEPL"
-        - "\U0001F1F9\U0001F1F7 土耳其-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国家宽-IEPL"
-        - "\U0001F1EB\U0001F1F7 法国-IEPL"
-        - "\U0001F1FB\U0001F1F3 越南-IEPL"
-        - "\U0001F1F7\U0001F1FA 俄罗斯-IEPL"
-        - "\U0001F1E6\U0001F1EA 迪拜-IEPL"
-        - "\U0001F1F2\U0001F1FD 墨西哥-IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡-200m-lkh1r7yu3"
-    - name: "\U0001F4F2 电报信息"
-      type: select
-      proxies:
-        - "\U0001F680 节点选择"
-        - ♻️ 自动选择
-        - DIRECT
-        - "\U0001F1ED\U0001F1F0 香港1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港2-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-电信IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-电信IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡1-负载IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡2-联通IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-移动IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-电信IEPL"
-        - "\U0001F1E9\U0001F1EA 德国1-负载IEPL"
-        - "\U0001F1E9\U0001F1EA 德国2-联通IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-移动IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-电信IEPL"
-        - "\U0001F1F0\U0001F1F7 韩国-IEPL"
-        - "\U0001F1F9\U0001F1ED 泰国-IEPL"
-        - "\U0001F1E6\U0001F1F7 阿根廷-IEPL"
-        - "\U0001F1F9\U0001F1F7 土耳其-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国家宽-IEPL"
-        - "\U0001F1EB\U0001F1F7 法国-IEPL"
-        - "\U0001F1FB\U0001F1F3 越南-IEPL"
-        - "\U0001F1F7\U0001F1FA 俄罗斯-IEPL"
-        - "\U0001F1E6\U0001F1EA 迪拜-IEPL"
-        - "\U0001F1F2\U0001F1FD 墨西哥-IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡-200m-lkh1r7yu3"
-    - name: Ⓜ️ 微软服务
-      type: select
-      proxies:
-        - "\U0001F680 节点选择"
-        - DIRECT
-        - ♻️ 自动选择
-    - name: "\U0001F34E 苹果服务"
+    - name: 全球直连
       type: select
       proxies:
         - DIRECT
-        - "\U0001F680 节点选择"
-        - ♻️ 自动选择
-    - name: "\U0001F4E2 谷歌服务"
+        - 节点选择
+    - name: AI服务
       type: select
       proxies:
-        - "\U0001F680 节点选择"
-        - ♻️ 自动选择
+        - 节点选择
+        - 美国节点
+        - 日本节点
+        - 新加坡节点
+        - 自动选择
+    - name: 国外媒体
+      type: select
+      proxies:
+        - 节点选择
+        - 香港节点
+        - 日本节点
+        - 新加坡节点
+        - 美国节点
+        - 自动选择
+    - name: Netflix
+      type: select
+      proxies:
+        - 节点选择
+        - 新加坡节点
+        - 香港节点
+        - 日本节点
+        - 美国节点
+        - 自动选择
+    - name: 电报消息
+      type: select
+      proxies:
+        - 节点选择
+        - 香港节点
+        - 新加坡节点
+        - 自动选择
+    - name: 谷歌服务
+      type: select
+      proxies:
+        - 节点选择
+        - 香港节点
+        - 日本节点
+        - 美国节点
+        - 自动选择
+    - name: 推特消息
+      type: select
+      proxies:
+        - 节点选择
+        - 香港节点
+        - 日本节点
+        - 美国节点
+        - 自动选择
+    - name: 脸书服务
+      type: select
+      proxies:
+        - 节点选择
+        - 香港节点
+        - 美国节点
+        - 自动选择
+    - name: 游戏平台
+      type: select
+      proxies:
+        - 节点选择
+        - 香港节点
+        - 日本节点
         - DIRECT
-        - "\U0001F1ED\U0001F1F0 香港1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港2-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-电信IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-电信IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡1-负载IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡2-联通IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-移动IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-电信IEPL"
-        - "\U0001F1E9\U0001F1EA 德国1-负载IEPL"
-        - "\U0001F1E9\U0001F1EA 德国2-联通IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-移动IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-电信IEPL"
-        - "\U0001F1F0\U0001F1F7 韩国-IEPL"
-        - "\U0001F1F9\U0001F1ED 泰国-IEPL"
-        - "\U0001F1E6\U0001F1F7 阿根廷-IEPL"
-        - "\U0001F1F9\U0001F1F7 土耳其-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国家宽-IEPL"
-        - "\U0001F1EB\U0001F1F7 法国-IEPL"
-        - "\U0001F1FB\U0001F1F3 越南-IEPL"
-        - "\U0001F1F7\U0001F1FA 俄罗斯-IEPL"
-        - "\U0001F1E6\U0001F1EA 迪拜-IEPL"
-        - "\U0001F1F2\U0001F1FD 墨西哥-IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡-200m-lkh1r7yu3"
-    - name: "\U0001F3AF 全球直连"
+    - name: 哔哩哔哩
       type: select
       proxies:
         - DIRECT
-        - "\U0001F680 节点选择"
-    - name: "\U0001F6D1 全球拦截"
+        - 香港节点
+        - 台湾节点
+    - name: 微软服务
+      type: select
+      proxies:
+        - DIRECT
+        - 节点选择
+        - 香港节点
+        - 美国节点
+    - name: 苹果服务
+      type: select
+      proxies:
+        - DIRECT
+        - 节点选择
+        - 美国节点
+    - name: GitHub
+      type: select
+      proxies:
+        - 节点选择
+        - DIRECT
+        - 自动选择
+    - name: 广告拦截
       type: select
       proxies:
         - REJECT
         - DIRECT
-    - name: "\U0001F41F 漏网之鱼"
+    - name: 漏网之鱼
       type: select
       proxies:
-        - "\U0001F680 节点选择"
-        - ♻️ 自动选择
+        - 节点选择
+        - 自动选择
         - DIRECT
-        - "\U0001F1ED\U0001F1F0 香港1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港2-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港3-电信IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-负载IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-联通IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-移动IEPL"
-        - "\U0001F1ED\U0001F1F0 香港家宽1-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾2-电信IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽1-负载IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-联通IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-移动IEPL"
-        - "\U0001F1E8\U0001F1F3 台湾家宽2-电信IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡1-负载IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡2-联通IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-移动IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡3-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽1-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本家宽2-电信IEPL"
-        - "\U0001F1EF\U0001F1F5 日本1-负载IEPL"
-        - "\U0001F1EF\U0001F1F5 日本2-联通IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-移动IEPL"
-        - "\U0001F1EF\U0001F1F5 日本3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国家宽3-电信IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-负载IEPL"
-        - "\U0001F1FA\U0001F1F8 美国2-联通IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-移动IEPL"
-        - "\U0001F1FA\U0001F1F8 美国1-电信IEPL"
-        - "\U0001F1E9\U0001F1EA 德国1-负载IEPL"
-        - "\U0001F1E9\U0001F1EA 德国2-联通IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-移动IEPL"
-        - "\U0001F1E9\U0001F1EA 德国3-电信IEPL"
-        - "\U0001F1F0\U0001F1F7 韩国-IEPL"
-        - "\U0001F1F9\U0001F1ED 泰国-IEPL"
-        - "\U0001F1E6\U0001F1F7 阿根廷-IEPL"
-        - "\U0001F1F9\U0001F1F7 土耳其-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国-IEPL"
-        - "\U0001F1EC\U0001F1E7 英国家宽-IEPL"
-        - "\U0001F1EB\U0001F1F7 法国-IEPL"
-        - "\U0001F1FB\U0001F1F3 越南-IEPL"
-        - "\U0001F1F7\U0001F1FA 俄罗斯-IEPL"
-        - "\U0001F1E6\U0001F1EA 迪拜-IEPL"
-        - "\U0001F1F2\U0001F1FD 墨西哥-IEPL"
-        - "\U0001F1F8\U0001F1EC 新加坡-200m-lkh1r7yu3"
+    - name: 香港节点
+      type: url-test
+      proxies:
+        - "🇭🇰 香港1-负载IEPL"
+        - "🇭🇰 香港2-联通IEPL"
+        - "🇭🇰 香港3-移动IEPL"
+        - "🇭🇰 香港3-电信IEPL"
+        - "🇭🇰 香港家宽1-负载IEPL"
+        - "🇭🇰 香港家宽1-联通IEPL"
+        - "🇭🇰 香港家宽1-移动IEPL"
+        - "🇭🇰 香港家宽1-电信IEPL"
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    - name: 台湾节点
+      type: url-test
+      proxies:
+        - "🇨🇳 台湾1-负载IEPL"
+        - "🇨🇳 台湾2-联通IEPL"
+        - "🇨🇳 台湾2-移动IEPL"
+        - "🇨🇳 台湾2-电信IEPL"
+        - "🇨🇳 台湾家宽1-负载IEPL"
+        - "🇨🇳 台湾家宽2-联通IEPL"
+        - "🇨🇳 台湾家宽2-移动IEPL"
+        - "🇨🇳 台湾家宽2-电信IEPL"
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    - name: 日本节点
+      type: url-test
+      proxies:
+        - "🇯🇵 日本家宽1-负载IEPL"
+        - "🇯🇵 日本家宽1-移动IEPL"
+        - "🇯🇵 日本家宽1-联通IEPL"
+        - "🇯🇵 日本家宽1-电信IEPL"
+        - "🇯🇵 日本家宽2-负载IEPL"
+        - "🇯🇵 日本家宽2-联通IEPL"
+        - "🇯🇵 日本家宽2-移动IEPL"
+        - "🇯🇵 日本家宽2-电信IEPL"
+        - "🇯🇵 日本1-负载IEPL"
+        - "🇯🇵 日本2-联通IEPL"
+        - "🇯🇵 日本3-移动IEPL"
+        - "🇯🇵 日本3-电信IEPL"
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    - name: 新加坡节点
+      type: url-test
+      proxies:
+        - "🇸🇬 新加坡1-负载IEPL"
+        - "🇸🇬 新加坡2-联通IEPL"
+        - "🇸🇬 新加坡3-移动IEPL"
+        - "🇸🇬 新加坡3-电信IEPL"
+        - "🇸🇬 新加坡-200m-lkh1r7yu3"
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    - name: 美国节点
+      type: url-test
+      proxies:
+        - "🇺🇸 美国家宽1-负载IEPL"
+        - "🇺🇸 美国家宽2-联通IEPL"
+        - "🇺🇸 美国家宽3-移动IEPL"
+        - "🇺🇸 美国家宽3-电信IEPL"
+        - "🇺🇸 美国1-负载IEPL"
+        - "🇺🇸 美国2-联通IEPL"
+        - "🇺🇸 美国1-移动IEPL"
+        - "🇺🇸 美国1-电信IEPL"
+      url: https://www.gstatic.com/generate_204
+      interval: 300
+    - name: 手动节点
+      type: select
+      proxies:
+        - "🇸🇬 新加坡-200m-lkh1r7yu3"
+    - name: 其他节点
+      type: select
+      proxies:
+        - "🇭🇰 香港1-负载IEPL"
+        - "🇭🇰 香港2-联通IEPL"
+        - "🇭🇰 香港3-移动IEPL"
+        - "🇭🇰 香港3-电信IEPL"
+        - "🇭🇰 香港家宽1-负载IEPL"
+        - "🇭🇰 香港家宽1-联通IEPL"
+        - "🇭🇰 香港家宽1-移动IEPL"
+        - "🇭🇰 香港家宽1-电信IEPL"
+        - "🇨🇳 台湾1-负载IEPL"
+        - "🇨🇳 台湾2-联通IEPL"
+        - "🇨🇳 台湾2-移动IEPL"
+        - "🇨🇳 台湾2-电信IEPL"
+        - "🇨🇳 台湾家宽1-负载IEPL"
+        - "🇨🇳 台湾家宽2-联通IEPL"
+        - "🇨🇳 台湾家宽2-移动IEPL"
+        - "🇨🇳 台湾家宽2-电信IEPL"
+        - "🇸🇬 新加坡1-负载IEPL"
+        - "🇸🇬 新加坡2-联通IEPL"
+        - "🇸🇬 新加坡3-移动IEPL"
+        - "🇸🇬 新加坡3-电信IEPL"
+        - "🇯🇵 日本家宽1-负载IEPL"
+        - "🇯🇵 日本家宽1-移动IEPL"
+        - "🇯🇵 日本家宽1-联通IEPL"
+        - "🇯🇵 日本家宽1-电信IEPL"
+        - "🇯🇵 日本家宽2-负载IEPL"
+        - "🇯🇵 日本家宽2-联通IEPL"
+        - "🇯🇵 日本家宽2-移动IEPL"
+        - "🇯🇵 日本家宽2-电信IEPL"
+        - "🇯🇵 日本1-负载IEPL"
+        - "🇯🇵 日本2-联通IEPL"
+        - "🇯🇵 日本3-移动IEPL"
+        - "🇯🇵 日本3-电信IEPL"
+        - "🇺🇸 美国家宽1-负载IEPL"
+        - "🇺🇸 美国家宽2-联通IEPL"
+        - "🇺🇸 美国家宽3-移动IEPL"
+        - "🇺🇸 美国家宽3-电信IEPL"
+        - "🇺🇸 美国1-负载IEPL"
+        - "🇺🇸 美国2-联通IEPL"
+        - "🇺🇸 美国1-移动IEPL"
+        - "🇺🇸 美国1-电信IEPL"
+        - "🇩🇪 德国1-负载IEPL"
+        - "🇩🇪 德国2-联通IEPL"
+        - "🇩🇪 德国3-移动IEPL"
+        - "🇩🇪 德国3-电信IEPL"
+        - "🇰🇷 韩国-IEPL"
+        - "🇹🇭 泰国-IEPL"
+        - "🇦🇷 阿根廷-IEPL"
+        - "🇹🇷 土耳其-IEPL"
+        - "🇬🇧 英国-IEPL"
+        - "🇬🇧 英国家宽-IEPL"
+        - "🇫🇷 法国-IEPL"
+        - "🇻🇳 越南-IEPL"
+        - "🇷🇺 俄罗斯-IEPL"
+        - "🇦🇪 迪拜-IEPL"
+        - "🇲🇽 墨西哥-IEPL"
+        - "🇸🇬 新加坡-200m-lkh1r7yu3"
 rule-providers:
     ads-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ads-all.mrs
-        path: ./ruleset/ads-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/ads-domain.mrs
         format: mrs
     ai-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-!cn.mrs
-        path: ./ruleset/ai-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/ai-domain.mrs
+        format: mrs
+    apple-cn-domain:
+        type: file
+        behavior: domain
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/apple-cn-domain.mrs
         format: mrs
     apple-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/apple.mrs
-        path: ./ruleset/apple-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/apple-domain.mrs
         format: mrs
     bilibili-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/bilibili.mrs
-        path: ./ruleset/bilibili-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/bilibili-domain.mrs
         format: mrs
     cn-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs
-        path: ./ruleset/cn-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/cn-domain.mrs
+        format: mrs
+    cn-ip:
+        type: file
+        behavior: ipcidr
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/cn-ip.mrs
+        format: mrs
+    epic-domain:
+        type: file
+        behavior: domain
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/epic-domain.mrs
+        format: mrs
+    facebook-domain:
+        type: file
+        behavior: domain
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/facebook-domain.mrs
+        format: mrs
+    facebook-ip:
+        type: file
+        behavior: ipcidr
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/facebook-ip.mrs
         format: mrs
     geolocation-!cn:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-!cn.mrs
-        path: ./ruleset/proxy-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/geolocation-!cn.mrs
         format: mrs
     github-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/github.mrs
-        path: ./ruleset/github-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/github-domain.mrs
         format: mrs
     google-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/google.mrs
-        path: ./ruleset/google-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/google-domain.mrs
         format: mrs
     google-ip:
-        type: http
+        type: file
         behavior: ipcidr
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/google.mrs
-        path: ./ruleset/google-ip.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/google-ip.mrs
         format: mrs
     microsoft-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs
-        path: ./ruleset/microsoft-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/microsoft-domain.mrs
         format: mrs
     netflix-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs
-        path: ./ruleset/netflix-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/netflix-domain.mrs
+        format: mrs
+    netflix-ip:
+        type: file
+        behavior: ipcidr
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/netflix-ip.mrs
         format: mrs
     private-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs
-        path: ./ruleset/private-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/private-domain.mrs
         format: mrs
     private-ip:
-        type: http
+        type: file
         behavior: ipcidr
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/private.mrs
-        path: ./ruleset/private-ip.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/private-ip.mrs
         format: mrs
     spotify-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/spotify.mrs
-        path: ./ruleset/spotify-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/spotify-domain.mrs
+        format: mrs
+    steam-domain:
+        type: file
+        behavior: domain
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/steam-domain.mrs
         format: mrs
     telegram-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs
-        path: ./ruleset/telegram-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/telegram-domain.mrs
         format: mrs
     telegram-ip:
-        type: http
+        type: file
         behavior: ipcidr
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/telegram.mrs
-        path: ./ruleset/telegram-ip.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/telegram-ip.mrs
         format: mrs
     tiktok-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tiktok.mrs
-        path: ./ruleset/tiktok-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/tiktok-domain.mrs
         format: mrs
     twitter-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs
-        path: ./ruleset/twitter-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/twitter-domain.mrs
         format: mrs
     twitter-ip:
-        type: http
+        type: file
         behavior: ipcidr
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/twitter.mrs
-        path: ./ruleset/twitter-ip.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/twitter-ip.mrs
         format: mrs
     youtube-domain:
-        type: http
+        type: file
         behavior: domain
-        url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/youtube.mrs
-        path: ./ruleset/youtube-domain.mrs
-        interval: 86400
+        url: ""
+        path: /Volumes/Tools+/编程/mihimo-web/p-box/backend/data/ruleset/youtube-domain.mrs
         format: mrs
 rules:
-    - "RULE-SET,private-domain,\U0001F3AF 全球直连"
-    - "RULE-SET,private-ip,\U0001F3AF 全球直连,no-resolve"
-    - "RULE-SET,ads-domain,\U0001F6D1 全球拦截"
-    - "RULE-SET,ai-domain,\U0001F680 节点选择"
-    - "RULE-SET,telegram-domain,\U0001F4F2 电报信息"
-    - "RULE-SET,telegram-ip,\U0001F4F2 电报信息,no-resolve"
-    - "RULE-SET,youtube-domain,\U0001F4E2 谷歌服务"
-    - "RULE-SET,google-domain,\U0001F4E2 谷歌服务"
-    - "RULE-SET,google-ip,\U0001F4E2 谷歌服务,no-resolve"
-    - RULE-SET,twitter-domain,� 国外媒体
-    - RULE-SET,twitter-ip,� 国外媒体,no-resolve
-    - "RULE-SET,github-domain,\U0001F680 节点选择"
-    - RULE-SET,microsoft-domain,Ⓜ️ 微软服务
-    - RULE-SET,apple-domain,� 苹果服务
-    - RULE-SET,netflix-domain,� 国外媒体
-    - RULE-SET,spotify-domain,� 国外媒体
-    - "RULE-SET,tiktok-domain,\U0001F30D 国外媒体"
-    - "RULE-SET,bilibili-domain,\U0001F3AF 全球直连"
-    - "RULE-SET,cn-domain,\U0001F3AF 全球直连"
-    - "RULE-SET,geolocation-!cn,\U0001F680 节点选择"
-    - "GEOIP,LAN,\U0001F3AF 全球直连,no-resolve"
-    - "GEOIP,CN,\U0001F3AF 全球直连,no-resolve"
-    - "MATCH,\U0001F41F 漏网之鱼"
+    - RULE-SET,private-domain,全球直连
+    - RULE-SET,private-ip,全球直连,no-resolve
+    - RULE-SET,ads-domain,广告拦截
+    - RULE-SET,ai-domain,AI服务
+    - RULE-SET,telegram-domain,电报消息
+    - RULE-SET,telegram-ip,电报消息,no-resolve
+    - RULE-SET,twitter-domain,推特消息
+    - RULE-SET,twitter-ip,推特消息,no-resolve
+    - RULE-SET,facebook-domain,脸书服务
+    - RULE-SET,youtube-domain,国外媒体
+    - RULE-SET,netflix-domain,Netflix
+    - RULE-SET,spotify-domain,国外媒体
+    - RULE-SET,tiktok-domain,国外媒体
+    - RULE-SET,bilibili-domain,哔哩哔哩
+    - RULE-SET,google-domain,谷歌服务
+    - RULE-SET,google-ip,谷歌服务,no-resolve
+    - RULE-SET,github-domain,GitHub
+    - RULE-SET,microsoft-domain,微软服务
+    - RULE-SET,apple-domain,苹果服务
+    - RULE-SET,steam-domain,游戏平台
+    - RULE-SET,epic-domain,游戏平台
+    - RULE-SET,cn-domain,全球直连
+    - RULE-SET,geolocation-!cn,节点选择
+    - GEOIP,LAN,全球直连,no-resolve
+    - GEOIP,CN,全球直连,no-resolve
+    - MATCH,漏网之鱼

@@ -1,263 +1,249 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { 
-  FileText, RefreshCw, Trash2, Download,
-  AlertCircle, AlertTriangle, Info, Loader2,
-  ArrowDown
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { api } from '@/api/client'
+import { Trash2, Pause, Play, ArrowDown, AlertCircle, AlertTriangle, Info, Bug, Search } from 'lucide-react'
+import { mihomoApi, LogEntry } from '@/api/mihomo'
+import { cn } from '@/lib/utils'
+import { useThemeStore } from '@/stores/themeStore'
 
-type LogLevel = 'all' | 'info' | 'warn' | 'error'
+type LogLevel = 'debug' | 'info' | 'warning' | 'error'
+
+interface LogItem extends LogEntry {
+  id: number
+  time: string
+}
 
 export default function LogsPage() {
   const { t } = useTranslation()
-  const [logs, setLogs] = useState<string[]>([])
-  const [level, setLevel] = useState<LogLevel>('all')
-  const [loading, setLoading] = useState(true)
-  const [autoRefresh, setAutoRefresh] = useState(true)
+  const { themeStyle } = useThemeStore()
+  const [logs, setLogs] = useState<LogItem[]>([])
+  const [level, setLevel] = useState<LogLevel>('info')
+  const [paused, setPaused] = useState(false)
+  const [filter, setFilter] = useState('')
   const [autoScroll, setAutoScroll] = useState(true)
-  const [isAtBottom, setIsAtBottom] = useState(true)
+  const logsContainerRef = useRef<HTMLDivElement>(null)
   const logsEndRef = useRef<HTMLDivElement>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+  const wsRef = useRef<WebSocket | null>(null)
+  const idRef = useRef(0)
+  const pausedRef = useRef(paused)
 
-  const loadLogs = async () => {
-    try {
-      const data = await api.get<string[]>(`/proxy/logs?limit=500&level=${level}`)
-      setLogs(data || [])
-    } catch (e) {
-      console.error('加载日志失败', e)
-      setLogs([])
-    } finally {
-      setLoading(false)
-    }
-  }
-
+  // 保持 pausedRef 同步
   useEffect(() => {
-    loadLogs()
+    pausedRef.current = paused
+  }, [paused])
+
+  // WebSocket 连接
+  useEffect(() => {
+    const connectWs = () => {
+      wsRef.current?.close()
+      wsRef.current = mihomoApi.createLogsWs((data) => {
+        if (pausedRef.current) return
+        const logItem: LogItem = {
+          ...data,
+          id: idRef.current++,
+          time: new Date().toLocaleTimeString()
+        }
+        setLogs(prev => [...prev.slice(-500), logItem])
+      }, level)
+    }
+
+    connectWs()
+    return () => {
+      wsRef.current?.close()
+    }
   }, [level])
 
-  useEffect(() => {
-    if (!autoRefresh) return
-    const timer = setInterval(loadLogs, 2000)
-    return () => clearInterval(timer)
-  }, [autoRefresh, level])
-
-  // 用户是否正在查看历史日志（手动向上滚动了）
-  const userScrolledUpRef = useRef(false)
-
-  // 检测是否滚动到底部
+  // 检测用户是否在底部
   const handleScroll = useCallback(() => {
-    if (!containerRef.current) return
-    const { scrollTop, scrollHeight, clientHeight } = containerRef.current
-    const atBottom = scrollHeight - scrollTop - clientHeight < 50
-    setIsAtBottom(atBottom)
+    const container = logsContainerRef.current
+    if (!container) return
     
-    // 用户向上滚动时，标记为正在查看历史
-    if (!atBottom) {
-      userScrolledUpRef.current = true
-      setAutoScroll(false)
-    }
+    const { scrollTop, scrollHeight, clientHeight } = container
+    const isAtBottom = scrollHeight - scrollTop - clientHeight < 50
+    setAutoScroll(isAtBottom)
   }, [])
 
-  // 只有用户没有向上滚动时才自动滚动
+  // 只有在 autoScroll 为 true 时才自动滚动
   useEffect(() => {
-    if (autoScroll && !userScrolledUpRef.current) {
-      logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (autoScroll && !paused) {
+      logsEndRef.current?.scrollIntoView({ behavior: 'auto' })
     }
-  }, [logs, autoScroll])
+  }, [logs, autoScroll, paused])
 
-  // 滚动到底部
-  const scrollToBottom = () => {
-    userScrolledUpRef.current = false // 重置标记
-    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    setAutoScroll(true)
-    setIsAtBottom(true)
+  // 获取日志图标
+  const getLogIcon = (type: string) => {
+    switch (type) {
+      case 'error': return <AlertCircle className="w-3.5 h-3.5 text-red-500" />
+      case 'warning': return <AlertTriangle className="w-3.5 h-3.5 text-yellow-500" />
+      case 'info': return <Info className="w-3.5 h-3.5 text-blue-500" />
+      default: return <Bug className="w-3.5 h-3.5 text-slate-400" />
+    }
   }
 
-  const handleClear = async () => {
-    // 前端清空显示
+  const handleClear = () => {
     setLogs([])
-    toast.success(t('logs.cleared'))
   }
 
-  const handleExport = () => {
-    const content = logs.join('\n')
-    const blob = new Blob([content], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `p-box-logs-${new Date().toISOString().slice(0, 10)}.txt`
-    a.click()
-    URL.revokeObjectURL(url)
-    toast.success(t('logs.exported'))
-  }
-
-  const getLogLevel = (log: string): 'info' | 'warn' | 'error' | 'debug' => {
-    if (log.includes('ERR') || log.includes('FATA') || log.includes('error')) return 'error'
-    if (log.includes('WARN') || log.includes('warning')) return 'warn'
-    if (log.includes('INFO') || log.includes('info')) return 'info'
-    return 'debug'
-  }
-
-  const getLogColor = (level: string) => {
-    switch (level) {
-      case 'error': return 'text-red-500'
-      case 'warn': return 'text-yellow-500'
-      case 'info': return 'text-blue-500'
-      default: return 'text-muted-foreground'
+  const getLevelColor = (type: string) => {
+    switch (type) {
+      case 'error': return 'text-red-400'
+      case 'warning': return 'text-yellow-400'
+      case 'debug': return 'text-slate-500'
+      default: return themeStyle === 'apple-glass' ? 'text-slate-600' : 'text-slate-300'
     }
   }
 
-  const getLogIcon = (level: string) => {
-    switch (level) {
-      case 'error': return <AlertCircle className="w-4 h-4 text-red-500" />
-      case 'warn': return <AlertTriangle className="w-4 h-4 text-yellow-500" />
-      case 'info': return <Info className="w-4 h-4 text-blue-500" />
-      default: return <FileText className="w-4 h-4 text-muted-foreground" />
-    }
-  }
+  const filteredLogs = filter 
+    ? logs.filter(log => log.payload.toLowerCase().includes(filter.toLowerCase()))
+    : logs
 
-  const levels: { value: LogLevel; label: string; color: string }[] = [
-    { value: 'all', label: t('logs.all'), color: 'bg-muted' },
-    { value: 'info', label: t('logs.info'), color: 'bg-blue-500' },
-    { value: 'warn', label: t('logs.warn'), color: 'bg-yellow-500' },
-    { value: 'error', label: t('logs.error'), color: 'bg-red-500' },
-  ]
+  const levels: LogLevel[] = ['debug', 'info', 'warning', 'error']
 
   return (
-    <div className="flex flex-col h-full">
-      {/* 顶部工具栏 */}
-      <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <p className="text-sm text-muted-foreground">
-          {t('logs.logCount', { count: logs.length })} {autoRefresh && `· ${t('logs.autoRefresh')}`}
-        </p>
-        <div className="flex items-center gap-2">
-          {/* 级别筛选 */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-muted/50">
-            {levels.map((l) => (
+    <div className="flex flex-col h-[calc(100vh-8rem)]">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+        <h2 className={cn(
+          'text-lg font-semibold',
+          themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+        )}>{t('logs.title')}</h2>
+        <div className="flex flex-wrap gap-2">
+          {/* Level selector */}
+          <div className="flex rounded-lg overflow-hidden border border-white/10">
+            {levels.map(l => (
               <button
-                key={l.value}
-                onClick={() => setLevel(l.value)}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
-                  level === l.value
-                    ? 'bg-background shadow-sm'
-                    : 'hover:bg-background/50'
-                }`}
+                key={l}
+                onClick={() => setLevel(l)}
+                className={cn(
+                  'px-2 sm:px-3 py-1.5 text-xs font-medium transition-colors',
+                  level === l
+                    ? themeStyle === 'apple-glass'
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-indigo-500 text-white'
+                    : themeStyle === 'apple-glass'
+                      ? 'bg-white/50 text-slate-600 hover:bg-white'
+                      : 'bg-white/5 text-slate-400 hover:bg-white/10'
+                )}
               >
-                <span className={`inline-block w-2 h-2 rounded-full mr-1.5 ${l.color}`} />
-                {l.label}
+                {t(`logs.${l}`)}
               </button>
             ))}
           </div>
 
-          {/* 自动刷新 */}
           <button
-            onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`p-2 rounded-lg transition-colors ${
-              autoRefresh ? 'bg-primary text-primary-foreground' : 'bg-muted hover:bg-muted/80'
-            }`}
-            title={autoRefresh ? t('logs.autoRefreshOn') : t('logs.autoRefreshOff')}
+            onClick={() => setPaused(!paused)}
+            className={cn(
+              'control-btn text-xs',
+              paused ? 'primary' : 'secondary'
+            )}
           >
-            <RefreshCw className={`w-4 h-4 ${autoRefresh ? 'animate-spin' : ''}`} />
+            {paused ? <Play className="w-3 h-3" /> : <Pause className="w-3 h-3" />}
           </button>
 
-          {/* 手动刷新 */}
-          <button
-            onClick={loadLogs}
-            className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-            title={t('logs.refresh')}
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-
-          {/* 导出 */}
-          <button
-            onClick={handleExport}
-            className="p-2 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
-            title={t('logs.export')}
-          >
-            <Download className="w-4 h-4" />
-          </button>
-
-          {/* 清空 */}
           <button
             onClick={handleClear}
-            className="p-2 rounded-lg bg-muted hover:bg-destructive/10 hover:text-destructive transition-colors"
-            title={t('logs.clear')}
+            className="control-btn danger text-xs"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3 h-3" />
+            {t('logs.clear')}
           </button>
         </div>
       </div>
 
-      {/* 日志内容 */}
-      <div className="flex-1 rounded-xl border border-border bg-card overflow-hidden relative">
-        {loading ? (
-          <div className="flex items-center justify-center h-full">
-            <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-          </div>
-        ) : logs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
-            <FileText className="w-12 h-12 mb-4 opacity-50" />
-            <p>{t('logs.noLogs')}</p>
-            <p className="text-sm mt-1">{t('logs.noLogsHint')}</p>
-          </div>
-        ) : (
-          <div 
-            ref={containerRef}
-            onScroll={handleScroll}
-            className="h-full overflow-auto p-4 font-mono text-sm"
-          >
-            {logs.map((log, index) => {
-              const logLevel = getLogLevel(log)
-              return (
+      {/* Filter */}
+      <div className="relative mb-4">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
+        <input
+          type="text"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder={t('logs.filter') + '...'}
+          className="form-input !pl-10"
+        />
+      </div>
+
+      {/* Logs container */}
+      <div className="relative flex-1">
+        <div 
+          ref={logsContainerRef}
+          onScroll={handleScroll}
+          className={cn(
+            'absolute inset-0 glass-card p-4 overflow-auto font-mono text-xs',
+            themeStyle === 'apple-glass' ? 'bg-white/60' : 'bg-black/30'
+          )}
+        >
+          {filteredLogs.length === 0 ? (
+            <div className={cn(
+              'text-center py-8',
+              themeStyle === 'apple-glass' ? 'text-slate-400' : 'text-slate-500'
+            )}>
+              {logs.length === 0 ? t('logs.noLogs') || '等待日志...' : t('logs.noMatch') || '无匹配日志'}
+            </div>
+          ) : (
+            <div className="space-y-1">
+              {filteredLogs.map(log => (
                 <div
-                  key={index}
-                  className={`flex items-start gap-2 py-1 hover:bg-muted/30 px-2 -mx-2 rounded ${
-                    logLevel === 'error' ? 'bg-red-500/5' : ''
-                  }`}
+                  key={log.id}
+                  className={cn(
+                    'flex items-start gap-2 py-1.5 px-2 rounded',
+                    'hover:bg-white/5 transition-colors',
+                    log.type === 'error' && 'bg-red-500/5'
+                  )}
                 >
                   <span className="flex-shrink-0 mt-0.5">
-                    {getLogIcon(logLevel)}
+                    {getLogIcon(log.type)}
                   </span>
-                  <span className={getLogColor(logLevel)}>{log}</span>
+                  <span className={cn(
+                    'text-[10px] opacity-60 w-16 flex-shrink-0',
+                    themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+                  )}>
+                    {log.time}
+                  </span>
+                  <span className={cn(
+                    'flex-1 break-all',
+                    getLevelColor(log.type)
+                  )}>
+                    {log.payload}
+                  </span>
                 </div>
-              )
-            })}
-            <div ref={logsEndRef} />
-          </div>
-        )}
-        
-        {/* 滚动到底部按钮 */}
-        {!isAtBottom && logs.length > 0 && (
+              ))}
+              <div ref={logsEndRef} />
+            </div>
+          )}
+        </div>
+
+        {/* 回到底部按钮 */}
+        {!autoScroll && (
           <button
-            onClick={scrollToBottom}
-            className="absolute bottom-4 right-4 p-2 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all"
-            title={t('logs.scrollToBottom')}
+            onClick={() => {
+              setAutoScroll(true)
+              logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+            }}
+            className={cn(
+              'absolute bottom-4 right-4 p-2 rounded-full shadow-lg transition-all',
+              themeStyle === 'apple-glass'
+                ? 'bg-blue-500 text-white hover:bg-blue-600'
+                : 'bg-indigo-500 text-white hover:bg-indigo-600'
+            )}
+            title="回到底部"
           >
             <ArrowDown className="w-4 h-4" />
           </button>
         )}
       </div>
 
-      {/* 底部状态栏 */}
-      <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground flex-shrink-0">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-blue-500" />
-            {t('logs.info')} {logs.filter(l => getLogLevel(l) === 'info').length}
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-yellow-500" />
-            {t('logs.warn')} {logs.filter(l => getLogLevel(l) === 'warn').length}
-          </span>
-          <span className="flex items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-red-500" />
-            {t('logs.error')} {logs.filter(l => getLogLevel(l) === 'error').length}
-          </span>
-        </div>
-        <span>{t('logs.lastUpdate')}: {new Date().toLocaleTimeString()}</span>
+      {/* Status bar */}
+      <div className={cn(
+        'flex items-center justify-between mt-2 text-xs',
+        themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-500'
+      )}>
+        <span>{filteredLogs.length} {t('logs.title')}</span>
+        <span className="flex items-center gap-2">
+          <span className={cn(
+            'w-2 h-2 rounded-full',
+            paused ? 'bg-yellow-500' : 'bg-green-500 animate-pulse'
+          )} />
+          {paused ? 'Paused' : 'Streaming'}
+        </span>
       </div>
     </div>
   )

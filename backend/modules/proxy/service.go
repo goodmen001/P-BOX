@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"p-box/backend/modules/system"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -81,6 +82,16 @@ type Service struct {
 }
 
 func NewService(dataDir string) *Service {
+	// 根据平台选择默认透明代理模式
+	defaultTransparentMode := "off"
+	defaultTunEnabled := false
+	if runtime.GOOS == "linux" {
+		// Linux 支持 TUN 模式（需要 root 权限）
+		defaultTransparentMode = "tun"
+		defaultTunEnabled = true
+	}
+	// macOS/Windows 默认使用系统代理模式，不启用 TUN
+
 	s := &Service{
 		dataDir:  dataDir,
 		coreType: "mihomo",
@@ -94,9 +105,9 @@ func NewService(dataDir string) *Service {
 			Mode:               "rule",
 			LogLevel:           "info",
 			ExternalController: "127.0.0.1:9090",
-			TunEnabled:         true,
+			TunEnabled:         defaultTunEnabled,
 			TunStack:           "mixed",
-			TransparentMode:    "tun", // 默认使用 TUN 模式
+			TransparentMode:    defaultTransparentMode,
 			AutoStart:          false,
 			AutoStartDelay:     15, // 默认延迟 15 秒
 		},
@@ -182,6 +193,13 @@ func (s *Service) loadConfig() {
 	}
 	if s.config.TransparentMode == "" {
 		s.config.TransparentMode = defaults.TransparentMode
+	}
+
+	// macOS/Windows 上强制使用系统代理模式（TUN 需要 root 权限）
+	if runtime.GOOS != "linux" && s.config.TransparentMode == "tun" {
+		fmt.Println("⚠️ 检测到非 Linux 系统，TUN 模式需要 root 权限，自动切换为系统代理模式")
+		s.config.TransparentMode = "off"
+		s.config.TunEnabled = false
 	}
 	if s.config.AutoStartDelay == 0 {
 		s.config.AutoStartDelay = defaults.AutoStartDelay
@@ -293,6 +311,16 @@ func (s *Service) Start() error {
 		s.mu.Unlock()
 	}()
 
+	// 根据透明代理模式自动设置系统代理（macOS/Windows）
+	if s.config.TransparentMode == "off" {
+		fmt.Println("🔧 检测到系统代理模式，自动设置系统代理...")
+		if err := system.SetSystemProxy("127.0.0.1", s.config.MixedPort); err != nil {
+			fmt.Printf("⚠️  设置系统代理失败: %v\n", err)
+		} else {
+			fmt.Println("✅ 系统代理已自动启用")
+		}
+	}
+
 	return nil
 }
 
@@ -321,6 +349,13 @@ func (s *Service) Stop() error {
 	// 恢复系统环境（在锁外执行）
 	if wasTunEnabled {
 		s.restoreSystemAfterTUN()
+	}
+
+	// 清除系统代理设置（macOS/Windows）
+	if err := system.ClearSystemProxy(); err != nil {
+		fmt.Printf("⚠️ 清除系统代理失败: %v\n", err)
+	} else {
+		fmt.Println("✓ 系统代理已清除")
 	}
 
 	return nil
@@ -389,6 +424,11 @@ func (s *Service) SetNodeProvider(provider NodeProvider) {
 	s.nodeProvider = provider
 }
 
+// RegenerateConfig 从节点管理模块获取过滤后的节点并生成配置（公开方法）
+func (s *Service) RegenerateConfig() (string, error) {
+	return s.regenerateConfig()
+}
+
 // regenerateConfig 从节点管理模块获取过滤后的节点并生成配置
 // 注意：调用此方法时不能持有 s.mu 锁
 func (s *Service) regenerateConfig() (string, error) {
@@ -405,6 +445,16 @@ func (s *Service) regenerateConfig() (string, error) {
 
 	fmt.Printf("🔄 重新生成配置，共 %d 个节点\n", len(allNodes))
 	return s.GenerateConfig(allNodes)
+}
+
+// GetConfigContent 读取生成的 config.yaml 文件内容
+func (s *Service) GetConfigContent() (string, error) {
+	configPath := filepath.Join(s.dataDir, "configs", "config.yaml")
+	data, err := os.ReadFile(configPath)
+	if err != nil {
+		return "", fmt.Errorf("配置文件不存在: %w", err)
+	}
+	return string(data), nil
 }
 
 func (s *Service) SetMode(mode string) error {

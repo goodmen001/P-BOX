@@ -316,7 +316,7 @@ func GetDefaultRuleProviders() []RuleProviderTemplate {
 		{Name: "ads-domain", Type: "http", Behavior: "domain", URL: baseURL + "/geosite/category-ads-all.mrs", Path: "./ruleset/ads-domain.mrs", Interval: 86400, Format: "mrs", Description: "广告域名"},
 
 		// AI 服务 (OpenAI, Claude, Gemini 等)
-		{Name: "ai-domain", Type: "http", Behavior: "domain", URL: baseURL + "/geosite/openai.mrs", Path: "./ruleset/ai-domain.mrs", Interval: 86400, Format: "mrs", Description: "AI 平台域名 (OpenAI, Claude, Gemini)"},
+		{Name: "ai-domain", Type: "http", Behavior: "domain", URL: "https://testingcf.jsdelivr.net/gh/QuixoticHeart/rule-set@ruleset/meta/domain/ai.mrs", Path: "./ruleset/ai-domain.mrs", Interval: 86400, Format: "mrs", Description: "AI 平台域名 (OpenAI, Claude, Gemini)"},
 
 		// 社交媒体
 		{Name: "telegram-domain", Type: "http", Behavior: "domain", URL: baseURL + "/geosite/telegram.mrs", Path: "./ruleset/telegram-domain.mrs", Interval: 86400, Format: "mrs", Description: "Telegram 域名"},

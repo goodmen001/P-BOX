@@ -22,6 +22,12 @@ import (
 	"p-box/backend/websocket"
 )
 
+// 版本信息 (由 main.go 设置)
+var (
+	Version   = "2.0.0"
+	BuildTime = "unknown"
+)
+
 // Server HTTP 服务器
 type Server struct {
 	config       *config.Config
@@ -81,6 +87,14 @@ func (s *Server) setupRoutes() {
 	s.router.Static("/assets", "./frontend/assets")
 	s.router.StaticFile("/", "./frontend/index.html")
 	s.router.StaticFile("/favicon.ico", "./frontend/favicon.ico")
+	// PNG 图标文件
+	s.router.StaticFile("/p-box-logo.png", "./frontend/p-box-logo.png")
+	s.router.StaticFile("/favicon-16.png", "./frontend/favicon-16.png")
+	s.router.StaticFile("/favicon-32.png", "./frontend/favicon-32.png")
+	s.router.StaticFile("/apple-touch-icon.png", "./frontend/apple-touch-icon.png")
+	// SVG 文件（兼容）
+	s.router.StaticFile("/p-box-logo.svg", "./frontend/p-box-logo.svg")
+	s.router.StaticFile("/favicon.svg", "./frontend/favicon.svg")
 
 	// 健康检查
 	s.router.GET("/api/health", s.healthCheck)
@@ -107,6 +121,10 @@ func (s *Server) setupRoutes() {
 		s.proxyHandler.RegisterRoutes(api.Group("/proxy"))
 		// 检查自动启动
 		s.proxyHandler.GetService().AutoStartIfEnabled()
+
+		// 代理设置模块
+		settingsHandler := proxy.NewSettingsHandler(s.config.DataDir)
+		settingsHandler.RegisterRoutes(api.Group("/proxy"))
 
 		// 核心模块
 		coreHandler := core.NewHandler(s.config.DataDir)
@@ -184,8 +202,8 @@ func (s *Server) systemInfo(c *gin.Context) {
 		"message": "success",
 		"data": gin.H{
 			"name":      "P-BOX",
-			"version":   "0.1.0",
-			"buildTime": "unknown",
+			"version":   Version,
+			"buildTime": BuildTime,
 		},
 	})
 }

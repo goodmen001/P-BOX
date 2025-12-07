@@ -1,11 +1,11 @@
-import { api } from './client'
+import api from './client'
 
 export interface Subscription {
   id: string
   name: string
   url: string
-  nodeCount: number          // 总节点数
-  filteredNodeCount: number  // 过滤后有效节点数
+  nodeCount: number
+  filteredNodeCount: number
   traffic?: {
     upload: number
     download: number
@@ -14,14 +14,13 @@ export interface Subscription {
   expireTime?: string
   updatedAt: string
   createdAt: string
-  // 定时更新
   autoUpdate: boolean
-  updateInterval: number // 秒
-  // 关键词过滤
+  updateInterval: number
   filterKeywords?: string[]
   filterMode: 'include' | 'exclude'
-  // 自定义请求头
   customHeaders?: Record<string, string>
+  lastUpdateStatus?: 'success' | 'failed'
+  lastError?: string
 }
 
 export interface SubscriptionNode {

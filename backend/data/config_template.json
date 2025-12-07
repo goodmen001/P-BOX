@@ -313,6 +313,16 @@
       "useAll": true
     },
     {
+      "name": "手动节点",
+      "type": "select",
+      "icon": "plus-circle",
+      "description": "手动添加的节点",
+      "enabled": true,
+      "proxies": [],
+      "filter": "__MANUAL__",
+      "useAll": true
+    },
+    {
       "name": "其他节点",
       "type": "select",
       "icon": "globe",

@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react'
-import { 
-  Download, Check, X, Clock,
-  Globe, Shield, Loader2, Settings
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { api } from '@/api/client'
+import { useTranslation } from 'react-i18next'
+import { Download, Globe, Shield, Loader2, Check, X, Clock, Settings } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { useThemeStore } from '@/stores/themeStore'
 
 interface RuleFile {
   name: string
@@ -22,7 +20,12 @@ interface RuleSetConfig {
   lastUpdate: string
 }
 
+// API 基础路径
+const API_BASE = '/api'
+
 export default function RulesetPage() {
+  const { t } = useTranslation()
+  const { themeStyle } = useThemeStore()
   const [geoFiles, setGeoFiles] = useState<RuleFile[]>([])
   const [providerFiles, setProviderFiles] = useState<RuleFile[]>([])
   const [config, setConfig] = useState<RuleSetConfig>({
@@ -32,6 +35,7 @@ export default function RulesetPage() {
   })
   const [loading, setLoading] = useState(true)
   const [updating, setUpdating] = useState(false)
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     loadData()
@@ -42,15 +46,15 @@ export default function RulesetPage() {
   const loadData = async () => {
     try {
       const [geoRes, providerRes, configRes] = await Promise.all([
-        api.get<RuleFile[]>('/ruleset/geo'),
-        api.get<RuleFile[]>('/ruleset/providers'),
-        api.get<RuleSetConfig>('/ruleset/config')
+        fetch(`${API_BASE}/ruleset/geo`).then(r => r.json()),
+        fetch(`${API_BASE}/ruleset/providers`).then(r => r.json()),
+        fetch(`${API_BASE}/ruleset/config`).then(r => r.json())
       ])
-      setGeoFiles(geoRes)
-      setProviderFiles(providerRes)
-      setConfig(configRes)
-    } catch (err) {
-      toast.error('加载规则数据失败')
+      setGeoFiles(geoRes.data || [])
+      setProviderFiles(providerRes.data || [])
+      setConfig(configRes.data || { autoUpdate: true, updateInterval: 1, lastUpdate: '' })
+    } catch {
+      // Ignore errors
     } finally {
       setLoading(false)
     }
@@ -58,39 +62,47 @@ export default function RulesetPage() {
 
   const checkStatus = async () => {
     try {
-      const status = await api.get<{ updating: boolean; lastUpdate: string }>('/ruleset/status')
-      setUpdating(status.updating)
+      const res = await fetch(`${API_BASE}/ruleset/status`)
+      const data = await res.json()
+      const status = data.data || {}
       if (!status.updating && updating) {
-        // 更新完成，刷新数据
         loadData()
       }
+      setUpdating(status.updating)
     } catch {
-      // ignore
+      // Ignore
     }
   }
 
   const handleUpdateAll = async () => {
     try {
       setUpdating(true)
-      await api.post('/ruleset/update')
-      toast.success('开始更新规则文件')
-    } catch (err) {
-      toast.error('启动更新失败')
+      await fetch(`${API_BASE}/ruleset/update`, { method: 'POST' })
+      alert(t('ruleset.updateStarted') || '开始更新规则文件')
+    } catch {
+      alert(t('common.error') || '启动更新失败')
       setUpdating(false)
     }
   }
 
   const handleSaveConfig = async () => {
     try {
-      await api.put('/ruleset/config', config)
-      toast.success('配置已保存')
-    } catch (err) {
-      toast.error('保存配置失败')
+      setSaving(true)
+      await fetch(`${API_BASE}/ruleset/config`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config)
+      })
+      alert(t('common.success') || '配置已保存')
+    } catch {
+      alert(t('common.error') || '保存配置失败')
+    } finally {
+      setSaving(false)
     }
   }
 
   const formatSize = (bytes: number) => {
-    if (bytes === 0) return '-'
+    if (!bytes || bytes === 0) return '-'
     const k = 1024
     const sizes = ['B', 'KB', 'MB', 'GB']
     const i = Math.floor(Math.log(bytes) / Math.log(k))
@@ -116,38 +128,53 @@ export default function RulesetPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
-      {/* 头部统计 */}
+    <div className="space-y-6">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          已下载 {completedCount}/{totalCount} 个规则文件
-          {config.lastUpdate && ` · 最后更新: ${config.lastUpdate}`}
-        </p>
+        <div>
+          <h2 className={cn(
+            'text-lg font-semibold',
+            themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+          )}>{t('ruleset.title') || '规则集'}</h2>
+          <p className={cn(
+            'text-sm mt-1',
+            themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+          )}>
+            已下载 {completedCount}/{totalCount} 个规则文件
+            {config.lastUpdate && ` · 最后更新: ${config.lastUpdate}`}
+          </p>
+        </div>
         <button
           onClick={handleUpdateAll}
           disabled={updating}
-          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
+          className="control-btn primary text-xs"
         >
           {updating ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
+            <Loader2 className="w-3 h-3 animate-spin" />
           ) : (
-            <Download className="h-4 w-4" />
+            <Download className="w-3 h-3" />
           )}
-          {updating ? '更新中...' : '全部更新'}
+          {updating ? (t('common.updating') || '更新中...') : (t('ruleset.updateAll') || '全部更新')}
         </button>
       </div>
 
       {/* 配置区域 */}
-      <div className="bg-card border border-border rounded-xl p-4">
+      <div className="glass-card p-4">
         <div className="flex items-center gap-2 mb-4">
-          <Settings className="h-5 w-5" />
-          <span className="font-medium">更新设置</span>
+          <Settings className={cn(
+            'h-5 w-5',
+            themeStyle === 'apple-glass' ? 'text-slate-600' : 'text-slate-300'
+          )} />
+          <span className={cn(
+            'font-medium',
+            themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+          )}>{t('ruleset.settings') || '更新设置'}</span>
         </div>
         <div className="flex flex-wrap items-center gap-6">
           <label className="flex items-center gap-2 cursor-pointer">
@@ -155,16 +182,22 @@ export default function RulesetPage() {
               type="checkbox"
               checked={config.autoUpdate}
               onChange={(e) => setConfig({ ...config, autoUpdate: e.target.checked })}
-              className="w-4 h-4 rounded border-gray-300"
+              className="w-4 h-4 rounded"
             />
-            <span className="text-sm">自动更新</span>
+            <span className={cn(
+              'text-sm',
+              themeStyle === 'apple-glass' ? 'text-slate-700' : 'text-slate-300'
+            )}>{t('ruleset.autoUpdate') || '自动更新'}</span>
           </label>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">更新间隔:</span>
+            <span className={cn(
+              'text-sm',
+              themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+            )}>{t('ruleset.interval') || '更新间隔'}:</span>
             <select
               value={config.updateInterval}
               onChange={(e) => setConfig({ ...config, updateInterval: Number(e.target.value) })}
-              className="px-3 py-1.5 text-sm bg-background border border-border rounded-lg"
+              className="form-input text-sm py-1.5 w-24"
             >
               <option value={1}>1 天</option>
               <option value={2}>2 天</option>
@@ -175,68 +208,136 @@ export default function RulesetPage() {
           </div>
           <button
             onClick={handleSaveConfig}
-            className="px-3 py-1.5 text-sm bg-secondary hover:bg-secondary/80 rounded-lg"
+            disabled={saving}
+            className="control-btn secondary text-xs"
           >
-            保存设置
+            {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
+            {t('common.save') || '保存设置'}
           </button>
         </div>
       </div>
 
       {/* GEO 数据库 */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-border flex items-center gap-2">
+      <div className="glass-card overflow-hidden">
+        <div className={cn(
+          'px-4 py-3 border-b flex items-center gap-2',
+          themeStyle === 'apple-glass' ? 'border-black/5' : 'border-white/5'
+        )}>
           <Globe className="h-5 w-5 text-blue-500" />
-          <span className="font-medium">GEO 数据库</span>
-          <span className="text-xs text-muted-foreground">({geoFiles.length})</span>
+          <span className={cn(
+            'font-medium',
+            themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+          )}>GEO 数据库</span>
+          <span className={cn(
+            'text-xs',
+            themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+          )}>({geoFiles.length})</span>
         </div>
-        <div className="divide-y divide-border">
+        <div className={cn(
+          'divide-y',
+          themeStyle === 'apple-glass' ? 'divide-black/5' : 'divide-white/5'
+        )}>
           {geoFiles.map((file) => (
-            <div key={file.name} className="px-4 py-3 flex items-center justify-between hover:bg-accent/50">
+            <div key={file.name} className={cn(
+              'px-4 py-3 flex items-center justify-between',
+              themeStyle === 'apple-glass' ? 'hover:bg-black/5' : 'hover:bg-white/5'
+            )}>
               <div className="flex items-center gap-3">
                 {getStatusIcon(file.status)}
                 <div>
-                  <div className="font-medium text-sm">{file.name}</div>
-                  <div className="text-xs text-muted-foreground">{file.description}</div>
+                  <div className={cn(
+                    'font-medium text-sm',
+                    themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+                  )}>{file.name}</div>
+                  <div className={cn(
+                    'text-xs',
+                    themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+                  )}>{file.description}</div>
                 </div>
               </div>
-              <div className="text-right text-sm">
-                <div className="text-muted-foreground">{formatSize(file.size)}</div>
+              <div className={cn(
+                'text-right text-sm',
+                themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+              )}>
+                <div>{formatSize(file.size)}</div>
                 {file.updatedAt && (
-                  <div className="text-xs text-muted-foreground">{file.updatedAt}</div>
+                  <div className="text-xs">{file.updatedAt}</div>
                 )}
               </div>
             </div>
           ))}
+          {geoFiles.length === 0 && (
+            <div className={cn(
+              'px-4 py-8 text-center text-sm',
+              themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+            )}>
+              {t('ruleset.noGeoFiles') || '暂无 GEO 数据文件'}
+            </div>
+          )}
         </div>
       </div>
 
       {/* 规则提供者 */}
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-border flex items-center gap-2">
+      <div className="glass-card overflow-hidden">
+        <div className={cn(
+          'px-4 py-3 border-b flex items-center gap-2',
+          themeStyle === 'apple-glass' ? 'border-black/5' : 'border-white/5'
+        )}>
           <Shield className="h-5 w-5 text-green-500" />
-          <span className="font-medium">规则提供者</span>
-          <span className="text-xs text-muted-foreground">({providerFiles.length})</span>
+          <span className={cn(
+            'font-medium',
+            themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+          )}>{t('ruleset.providers') || '规则提供者'}</span>
+          <span className={cn(
+            'text-xs',
+            themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+          )}>({providerFiles.length})</span>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 divide-border">
+        <div className={cn(
+          'grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0',
+          themeStyle === 'apple-glass' ? 'divide-black/5' : 'divide-white/5'
+        )}>
           {providerFiles.map((file, index) => (
             <div 
               key={file.name} 
-              className={`px-4 py-3 flex items-center justify-between hover:bg-accent/50 ${
-                index % 2 === 0 ? 'md:border-r border-border' : ''
-              } ${index >= 2 ? 'md:border-t border-border' : ''}`}
+              className={cn(
+                'px-4 py-3 flex items-center justify-between',
+                themeStyle === 'apple-glass' ? 'hover:bg-black/5' : 'hover:bg-white/5',
+                index % 2 === 0 && themeStyle === 'apple-glass' ? 'md:border-r md:border-black/5' : '',
+                index % 2 === 0 && themeStyle !== 'apple-glass' ? 'md:border-r md:border-white/5' : '',
+                index >= 2 && themeStyle === 'apple-glass' ? 'md:border-t md:border-black/5' : '',
+                index >= 2 && themeStyle !== 'apple-glass' ? 'md:border-t md:border-white/5' : ''
+              )}
             >
               <div className="flex items-center gap-3 min-w-0">
                 {getStatusIcon(file.status)}
                 <div className="min-w-0">
-                  <div className="font-medium text-sm truncate">{file.name}</div>
-                  <div className="text-xs text-muted-foreground truncate">{file.description}</div>
+                  <div className={cn(
+                    'font-medium text-sm truncate',
+                    themeStyle === 'apple-glass' ? 'text-slate-800' : 'text-white'
+                  )}>{file.name}</div>
+                  <div className={cn(
+                    'text-xs truncate',
+                    themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+                  )}>{file.description}</div>
                 </div>
               </div>
-              <div className="text-right text-sm flex-shrink-0 ml-2">
-                <div className="text-muted-foreground">{formatSize(file.size)}</div>
+              <div className={cn(
+                'text-right text-sm flex-shrink-0 ml-2',
+                themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+              )}>
+                {formatSize(file.size)}
               </div>
             </div>
           ))}
+          {providerFiles.length === 0 && (
+            <div className={cn(
+              'col-span-2 px-4 py-8 text-center text-sm',
+              themeStyle === 'apple-glass' ? 'text-slate-500' : 'text-slate-400'
+            )}>
+              {t('ruleset.noProviders') || '暂无规则提供者'}
+            </div>
+          )}
         </div>
       </div>
     </div>

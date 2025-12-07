@@ -2,7 +2,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'sonner'
 import { useState, useEffect, ReactNode } from 'react'
 import { Loader2 } from 'lucide-react'
-import Layout from '@/components/layout/Layout'
+import { Layout } from '@/components/layout'
 import DashboardPage from '@/pages/DashboardPage'
 import ProxySwitchPage from '@/pages/ProxySwitchPage'
 import NodesPage from '@/pages/NodesPage'
@@ -14,10 +14,11 @@ import SettingsPage from '@/pages/SettingsPage'
 import ToolsPage from '@/pages/ToolsPage'
 import ConfigGeneratorPage from '@/pages/ConfigGeneratorPage'
 import CoreManagePage from '@/pages/CoreManagePage'
+import ProxySettingsPage from '@/pages/ProxySettingsPage'
 import LoginPage from '@/pages/LoginPage'
 import { authApi } from '@/api/auth'
 
-// 路由守卫组件
+// Auth guard component
 function AuthGuard({ children }: { children: ReactNode }) {
   const location = useLocation()
   const [checking, setChecking] = useState(true)
@@ -31,7 +32,7 @@ function AuthGuard({ children }: { children: ReactNode }) {
           setNeedLogin(true)
         }
       } catch {
-        // 忽略错误
+        // Ignore errors
       } finally {
         setChecking(false)
       }
@@ -73,6 +74,7 @@ function App() {
                 <Route path="/tools" element={<ToolsPage />} />
                 <Route path="/config-generator" element={<ConfigGeneratorPage />} />
                 <Route path="/core-manage" element={<CoreManagePage />} />
+                <Route path="/proxy-settings" element={<ProxySettingsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
               </Routes>
             </Layout>

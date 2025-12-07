@@ -13,6 +13,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"time"
 )
 
 type CoreType string
@@ -20,6 +21,12 @@ type CoreType string
 const (
 	CoreTypeMihomo  CoreType = "mihomo"
 	CoreTypeSingbox CoreType = "singbox"
+)
+
+// CDN 镜像地址
+const (
+	MihomoCDNBase  = "https://ghfast.top/https://github.com/MetaCubeX/mihomo/releases/download"
+	SingboxCDNBase = "https://ghfast.top/https://github.com/SagerNet/sing-box/releases/download"
 )
 
 type CoreStatus struct {
@@ -52,8 +59,10 @@ type Service struct {
 
 // 持久化状态
 type SavedCoreStatus struct {
-	CurrentCore string            `json:"currentCore"`
-	Versions    map[string]string `json:"versions"`
+	CurrentCore    string            `json:"currentCore"`
+	Versions       map[string]string `json:"versions"`
+	LatestVersions map[string]string `json:"latestVersions"`
+	LastChecked    time.Time         `json:"lastChecked"`
 }
 
 func NewService(dataDir string) *Service {
@@ -104,17 +113,29 @@ func (s *Service) loadSavedStatus() {
 			}
 		}
 	}
+
+	// 加载保存的最新版本信息
+	for name, latestVersion := range saved.LatestVersions {
+		if core, ok := s.cores[name]; ok {
+			core.LatestVersion = latestVersion
+		}
+	}
 }
 
 func (s *Service) saveStatus() error {
 	s.mu.RLock()
 	saved := SavedCoreStatus{
-		CurrentCore: string(s.currentCore),
-		Versions:    make(map[string]string),
+		CurrentCore:    string(s.currentCore),
+		Versions:       make(map[string]string),
+		LatestVersions: make(map[string]string),
+		LastChecked:    time.Now(),
 	}
 	for name, core := range s.cores {
 		if core.Installed {
 			saved.Versions[name] = core.Version
+		}
+		if core.LatestVersion != "" {
+			saved.LatestVersions[name] = core.LatestVersion
 		}
 	}
 	s.mu.RUnlock()
@@ -333,7 +354,8 @@ func (s *Service) DownloadCore(coreType string) error {
 		s.mu.Unlock()
 	}()
 
-	downloadURL, err := s.getCoreDownloadURL(coreType)
+	// 获取 CDN 和官方下载地址
+	cdnURL, officialURL, err := s.getCoreDownloadURLs(coreType)
 	if err != nil {
 		s.mu.Lock()
 		s.downloadProgress[coreType].Error = err.Error()
@@ -341,16 +363,41 @@ func (s *Service) DownloadCore(coreType string) error {
 		return err
 	}
 
-	fmt.Printf("Downloading %s from %s\n", coreType, downloadURL)
-
-	resp, err := http.Get(downloadURL)
+	// 尝试 CDN 下载
+	fmt.Printf("📦 尝试从 CDN 下载 %s: %s\n", coreType, cdnURL)
+	err = s.downloadFromURL(coreType, cdnURL)
 	if err != nil {
-		return fmt.Errorf("download failed: %v", err)
+		fmt.Printf("⚠️ CDN 下载失败: %v，尝试官方地址...\n", err)
+		// 回退到官方地址
+		fmt.Printf("📦 尝试从官方下载 %s: %s\n", coreType, officialURL)
+		err = s.downloadFromURL(coreType, officialURL)
+		if err != nil {
+			s.mu.Lock()
+			s.downloadProgress[coreType].Error = err.Error()
+			s.mu.Unlock()
+			return fmt.Errorf("下载失败: %v", err)
+		}
+	}
+
+	fmt.Printf("✅ %s 下载完成\n", coreType)
+	return nil
+}
+
+// downloadFromURL 从指定 URL 下载核心
+func (s *Service) downloadFromURL(coreType, downloadURL string) error {
+	// 创建带超时的 HTTP 客户端
+	client := &http.Client{
+		Timeout: 5 * time.Minute,
+	}
+
+	resp, err := client.Get(downloadURL)
+	if err != nil {
+		return fmt.Errorf("请求失败: %v", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("download failed: HTTP %d", resp.StatusCode)
+		return fmt.Errorf("HTTP %d", resp.StatusCode)
 	}
 
 	os.MkdirAll(filepath.Join(s.dataDir, "cores"), 0755)
@@ -393,7 +440,7 @@ func (s *Service) DownloadCore(coreType string) error {
 	binPath := s.getCoreBinaryPath(coreType)
 	if err := s.extractCore(tmpFile, binPath, coreType); err != nil {
 		os.Remove(tmpFile)
-		return fmt.Errorf("extract failed: %v", err)
+		return fmt.Errorf("解压失败: %v", err)
 	}
 	os.Remove(tmpFile)
 
@@ -408,7 +455,6 @@ func (s *Service) DownloadCore(coreType string) error {
 	// 持久化保存
 	s.saveStatus()
 
-	fmt.Printf("%s downloaded and extracted to %s\n", coreType, binPath)
 	return nil
 }
 
@@ -467,7 +513,8 @@ func (s *Service) extractCore(archivePath, destPath, coreType string) error {
 	return fmt.Errorf("executable not found in archive")
 }
 
-func (s *Service) getCoreDownloadURL(coreType string) (string, error) {
+// getCoreDownloadURLs 获取下载 URL（CDN 优先，官方备用）
+func (s *Service) getCoreDownloadURLs(coreType string) (cdnURL, officialURL string, err error) {
 	arch := runtime.GOARCH
 	goos := runtime.GOOS
 
@@ -476,7 +523,7 @@ func (s *Service) getCoreDownloadURL(coreType string) (string, error) {
 	s.mu.RUnlock()
 
 	if version == "" {
-		return "", fmt.Errorf("version not found, please check latest version first")
+		return "", "", fmt.Errorf("version not found, please check latest version first")
 	}
 
 	// 转换架构名称
@@ -496,21 +543,20 @@ func (s *Service) getCoreDownloadURL(coreType string) (string, error) {
 	switch coreType {
 	case "mihomo":
 		// mihomo releases 格式: mihomo-darwin-arm64-v1.18.10.gz
-		// 或 mihomo-darwin-arm64-compatible-v1.18.10.gz (兼容版)
-		return fmt.Sprintf(
-			"https://github.com/MetaCubeX/mihomo/releases/download/v%s/mihomo-%s-%s-v%s.gz",
-			version, osName, archName, version,
-		), nil
+		filename := fmt.Sprintf("mihomo-%s-%s-v%s.gz", osName, archName, version)
+		cdnURL = fmt.Sprintf("%s/v%s/%s", MihomoCDNBase, version, filename)
+		officialURL = fmt.Sprintf("https://github.com/MetaCubeX/mihomo/releases/download/v%s/%s", version, filename)
+		return cdnURL, officialURL, nil
 
 	case "singbox":
 		// sing-box releases 格式: sing-box-1.10.5-darwin-arm64.tar.gz
-		return fmt.Sprintf(
-			"https://github.com/SagerNet/sing-box/releases/download/v%s/sing-box-%s-%s-%s.tar.gz",
-			version, version, osName, archName,
-		), nil
+		filename := fmt.Sprintf("sing-box-%s-%s-%s.tar.gz", version, osName, archName)
+		cdnURL = fmt.Sprintf("%s/v%s/%s", SingboxCDNBase, version, filename)
+		officialURL = fmt.Sprintf("https://github.com/SagerNet/sing-box/releases/download/v%s/%s", version, filename)
+		return cdnURL, officialURL, nil
 	}
 
-	return "", fmt.Errorf("unknown core type")
+	return "", "", fmt.Errorf("unknown core type")
 }
 
 func (s *Service) GetDownloadProgress(coreType string) *DownloadProgress {
@@ -521,4 +567,61 @@ func (s *Service) GetDownloadProgress(coreType string) *DownloadProgress {
 		return progress
 	}
 	return &DownloadProgress{}
+}
+
+// Initialize 启动时自动初始化（延迟执行）
+// delaySeconds: 启动后延迟多少秒执行检测
+func (s *Service) Initialize(delaySeconds int) {
+	go func() {
+		// 延迟执行
+		time.Sleep(time.Duration(delaySeconds) * time.Second)
+		fmt.Printf("🔍 开始自动检测核心版本...\n")
+
+		// 1. 检测最新版本
+		s.GetLatestVersions()
+
+		// 2. 检查是否需要自动下载 mihomo 核心
+		s.mu.RLock()
+		mihomoInstalled := s.cores["mihomo"].Installed
+		mihomoLatestVersion := s.cores["mihomo"].LatestVersion
+		s.mu.RUnlock()
+
+		if !mihomoInstalled && mihomoLatestVersion != "" {
+			fmt.Printf("📦 检测到未安装 mihomo 核心，开始自动下载...\n")
+			fmt.Printf("   平台: %s/%s\n", runtime.GOOS, runtime.GOARCH)
+			if err := s.DownloadCore("mihomo"); err != nil {
+				fmt.Printf("❌ 自动下载 mihomo 失败: %v\n", err)
+			} else {
+				fmt.Printf("✅ mihomo 核心自动下载完成\n")
+			}
+		}
+
+		// 保存状态
+		s.saveStatus()
+		fmt.Printf("✅ 核心版本检测完成\n")
+	}()
+}
+
+// RefreshVersions 手动刷新版本信息（前端点击刷新时调用）
+func (s *Service) RefreshVersions() (map[string]string, error) {
+	fmt.Printf("🔄 手动刷新核心版本信息...\n")
+
+	versions, err := s.GetLatestVersions()
+	if err != nil {
+		return nil, err
+	}
+
+	// 保存到文件
+	s.saveStatus()
+
+	fmt.Printf("✅ 版本信息已更新并保存\n")
+	return versions, nil
+}
+
+// GetPlatformInfo 获取当前平台信息
+func (s *Service) GetPlatformInfo() map[string]string {
+	return map[string]string{
+		"os":   runtime.GOOS,
+		"arch": runtime.GOARCH,
+	}
 }
